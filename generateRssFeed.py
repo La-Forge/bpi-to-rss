@@ -109,7 +109,7 @@ class MyServer(BaseHTTPRequestHandler):
         self.wfile.write(generate_feed())
  
 def start_server(hostPort):
-    hostName = "localhost"
+    hostName = ''
     print(hostPort)
 
     myServer = HTTPServer((hostName, hostPort), MyServer)
