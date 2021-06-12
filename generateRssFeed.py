@@ -1,11 +1,12 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
-import socketserver
+import os
 from lxml import html
 from xml.etree import ElementTree
 import requests
 from feedgen.feed import FeedGenerator
 import pprint
+import sys
 
 BPI_URL = 'https://www.bpifrance.fr/A-la-une/Appels-a-projets-concours'
 
@@ -107,9 +108,9 @@ class MyServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(generate_feed())
  
-def start_server():
+def start_server(hostPort):
     hostName = "localhost"
-    hostPort = 8000
+    print(hostPort)
 
     myServer = HTTPServer((hostName, hostPort), MyServer)
     print(time.asctime(), "Server Starts - %s:%s" % (hostName, hostPort))
@@ -123,5 +124,5 @@ def start_server():
     print(time.asctime(), "Server Stops - %s:%s" % (hostName, hostPort))
 
 if __name__ == "__main__":
-    start_server()
+    start_server(int(sys.argv[1]))
     #print_data()
