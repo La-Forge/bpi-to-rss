@@ -123,5 +123,5 @@ def start_server():
     print(time.asctime(), "Server Stops - %s:%s" % (hostName, hostPort))
 
 if __name__ == "__main__":
-    #start_server()
-    print_data()
+    start_server()
+    #print_data()
