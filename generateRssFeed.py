@@ -7,11 +7,8 @@ import requests
 from feedgen.feed import FeedGenerator
 import pprint
 import sys
-import datetime
-
 
 BPI_URL = 'https://www.bpifrance.fr/A-la-une/Appels-a-projets-concours'
-
 
 def get_raw_text(element):
     raw_text = ElementTree.tostring(
@@ -35,7 +32,7 @@ def extract_data():
     items = tree.xpath('//div[@class="item-offre"]')
 
     # reverse order to have last item first
-    items.reverse()
+    # items.reverse()
 
     # extract content
     articles = []
@@ -53,16 +50,9 @@ def extract_data():
         # extract date
         article['date'] = get_raw_text(item.xpath('.//div[@class="date"]')[0])
 
-        # create published date
-       # begin_date = article['date'].split(" - ")[0].strip()
-        #print(begin_date+".")
-        #date_time_obj = datetime.datetime.strptime(begin_date, '%d %m %Y')
-        #article['published']= date_time_obj
-
         # extract type
         article['type'] = get_raw_text(
             item.xpath('.//div[@class="type-offre"]')[0])
-
         
         # extract title
         article['title'] = "["+article['type']+"] "+get_raw_text(
@@ -101,13 +91,14 @@ def generate_feed():
         fe = fg.add_entry()
         fe.id(article['link'])
         fe.title(article['title'])
-        fe.published(article['date'])
         fe.link(href=article['link'])
         fe.description(article['description'])   
 
     atomfeed = fg.atom_str(pretty=True) # Get the ATOM feed as string
     return atomfeed
 
+def print_feed():
+    print(generate_feed())
 
 class MyRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -132,5 +123,5 @@ def start_server(hostPort):
     print(time.asctime(), "Server Stops - %s:%s" % (hostName, hostPort))
 
 if __name__ == "__main__":
-    #start_server(int(sys.argv[1]))
-    print_data()
+    start_server(int(sys.argv[1]))
+    #print_feed()
