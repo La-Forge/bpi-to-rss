@@ -7,6 +7,8 @@ import requests
 from feedgen.feed import FeedGenerator
 import pprint
 import sys
+import datetime
+
 
 BPI_URL = 'https://www.bpifrance.fr/A-la-une/Appels-a-projets-concours'
 
@@ -51,6 +53,11 @@ def extract_data():
         # extract date
         article['date'] = get_raw_text(item.xpath('.//div[@class="date"]')[0])
 
+        # create published date
+       # begin_date = article['date'].split(" - ")[0].strip()
+        #print(begin_date+".")
+        #date_time_obj = datetime.datetime.strptime(begin_date, '%d %m %Y')
+        #article['published']= date_time_obj
 
         # extract type
         article['type'] = get_raw_text(
@@ -94,6 +101,7 @@ def generate_feed():
         fe = fg.add_entry()
         fe.id(article['link'])
         fe.title(article['title'])
+        fe.published(article['date'])
         fe.link(href=article['link'])
         fe.description(article['description'])   
 
@@ -101,10 +109,10 @@ def generate_feed():
     return atomfeed
 
 
-class MyServer(BaseHTTPRequestHandler):
+class MyRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-type", "application/rss+xml")
+        self.send_header("Content-type", "application/rss+xml; charset=utf-8")
         self.end_headers()
         self.wfile.write(generate_feed())
  
@@ -112,7 +120,7 @@ def start_server(hostPort):
     hostName = ''
     print(hostPort)
 
-    myServer = HTTPServer((hostName, hostPort), MyServer)
+    myServer = HTTPServer((hostName, hostPort), MyRequestHandler)
     print(time.asctime(), "Server Starts - %s:%s" % (hostName, hostPort))
 
     try:
@@ -124,5 +132,5 @@ def start_server(hostPort):
     print(time.asctime(), "Server Stops - %s:%s" % (hostName, hostPort))
 
 if __name__ == "__main__":
-    start_server(int(sys.argv[1]))
-    #print_data()
+    #start_server(int(sys.argv[1]))
+    print_data()
