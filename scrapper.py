@@ -16,4 +16,3 @@ def main(hostPort):
 
 if __name__ == "__main__":
     main(int(sys.argv[1]))
-    
