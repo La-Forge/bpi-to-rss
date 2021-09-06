@@ -132,3 +132,4 @@ class RssRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/rss+xml; charset=utf-8")
         self.end_headers()
         self.wfile.write(self.bpiScrapper.generate_feed(verbose=False))
+        

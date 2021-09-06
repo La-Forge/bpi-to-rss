@@ -14,3 +14,4 @@ class GniusScrapper:
             res['title'] = article.find("h3").text.strip()
             res['category']= article.select('.o-teaser__infos--top')[0].text.strip()
             print(res)
+
