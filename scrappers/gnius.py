@@ -21,10 +21,9 @@ class GniusScrapper:
             res['date']= article.select(".o-teaser__infos .fw-medium .a-info__text")[0].text.strip()
             res['content']= link.text.strip()
             scraps.append(res)
-            print(res)
 
         return scraps
-        
+
     def scrapPages(self, verbose=False):
         page = 0
         count_for_current_page = -1
