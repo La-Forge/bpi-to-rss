@@ -102,34 +102,3 @@ class BpiScrapper:
 
         atomfeed = fg.atom_str(pretty=True) # Get the ATOM feed as string
         return atomfeed
-
-
-    def start_server(self, hostPort):
-        hostName = ''
-
-        handler = RssRequestHandler(self)
-        myServer = HTTPServer((hostName, hostPort), handler)
-        print(time.asctime(), "Server Starts - %s:%s" % (hostName, hostPort))
-
-        try:
-            myServer.serve_forever()
-        except KeyboardInterrupt:
-            pass
-
-        myServer.server_close()
-        print(time.asctime(), "Server Stops - %s:%s" % (hostName, hostPort))
-
-
-class RssRequestHandler(BaseHTTPRequestHandler):
-    def __init__(self, bpiScrapper):
-        self.bpiScrapper = bpiScrapper
-
-    def __call__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "application/rss+xml; charset=utf-8")
-        self.end_headers()
-        self.wfile.write(self.bpiScrapper.generate_feed(verbose=False))
-        
