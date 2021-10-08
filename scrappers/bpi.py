@@ -26,7 +26,6 @@ class BpiScrapper:
         
 
     def scrapPage(self,pageNumber, verbose = False):
-
         data = {
             "view_name": "events_before_end_date",
             "view_display_id": "events_finishing_more_week",
@@ -65,7 +64,10 @@ class BpiScrapper:
                 type = article.select('.desc-block .rubrique-project')[0].text.strip()
                 
                 #content
-                content = article.select('.desc-block .desc p')[0].text.strip()
+                p = article.select('.desc-block .desc p')
+                content=''
+                if (p and len(p)):
+                    content = p[0].text.strip()
 
                 #generate description
                 description =  f"[{type}][{desc_date}]\n{content}"
