@@ -6,7 +6,16 @@ from scrappers.bpi import BpiScrapper
 import sys
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+import sentry_sdk
+sentry_sdk.init(
+    "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
 
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
+division_by_zero = 1 / 0
 class RssRequestHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
