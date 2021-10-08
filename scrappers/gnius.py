@@ -1,7 +1,19 @@
+from html import unescape
 import requests
 from bs4 import BeautifulSoup
 
 from feedgen.feed import FeedGenerator
+import sentry_sdk
+from sentry_sdk import capture_exception
+
+sentry_sdk.init(
+    "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
+
 class GniusScrapper:
     def __init__(self):
 
@@ -15,11 +27,11 @@ class GniusScrapper:
         for article in articles:
             res = {}
             link = article.find("h3").find("a")
-            res['title'] = article.find("h3").text.strip()
-            res['description']= article.select('.o-teaser__infos--top')[0].text.strip()
+            res['title'] = unescape(article.find("h3").text.strip())
+            res['description']= unescape(article.select('.o-teaser__infos--top')[0].text.strip())
             res['link']= self.GNIUS_HOST+link['href']
             res['date']= article.select(".o-teaser__infos .fw-medium .a-info__text")[0].text.strip()
-            res['content']= link.text.strip()
+            res['content']= unescape(link.text.strip())
             scraps.append(res)
 
         return scraps
@@ -45,13 +57,17 @@ class GniusScrapper:
         fg.language('fr')
 
         #add articles
-        articles = self.scrapPages(verbose=verbose)
-        for article in articles:
-            fe = fg.add_entry()
-            fe.id(article['link'])
-            fe.title(article['title'])
-            fe.link(href=article['link'])
-            fe.description(article['description'])
+        try:
+            articles = self.scrapPages(verbose=verbose)
+            for article in articles:
+                fe = fg.add_entry()
+                fe.id(article['link'])
+                fe.title(article['title'])
+                fe.link(href=article['link'])
+                fe.description(article['description'])
+        except Exception as e:
+            print('exeption')
+            capture_exception(e)
 
         atomfeed = fg.atom_str(pretty=True) # Get the ATOM feed as string
         return atomfeed

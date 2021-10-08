@@ -5,16 +5,7 @@ from scrappers.gnius import GniusScrapper
 from scrappers.bpi import BpiScrapper
 import sys
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import sentry_sdk
-from sentry_sdk import capture_exception
 
-sentry_sdk.init(
-    "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    traces_sample_rate=1.0
-)
 class RssRequestHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
@@ -36,7 +27,7 @@ class RssRequestHandler(BaseHTTPRequestHandler):
 
 
 def main(server_class=HTTPServer, handler_class=RssRequestHandler, addr="localhost", port=8000):
-    try:
+
         handler_class.bpi_scrapper = BpiScrapper()
         handler_class.gnius_scrapper = GniusScrapper()
         server_address = (addr, port)
@@ -44,8 +35,7 @@ def main(server_class=HTTPServer, handler_class=RssRequestHandler, addr="localho
         
         print(f"Starting httpd server on {addr}:{port}")
         httpd.serve_forever()
-    except Exception as e:
-        capture_exception(e)
+
 
     
 if __name__ == "__main__":
