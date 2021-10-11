@@ -7,6 +7,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import sentry_sdk
 from sentry_sdk import capture_exception
+import dateparser
 
 sentry_sdk.init(
     "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
@@ -70,6 +71,8 @@ class BpiScrapper:
                 
                 #date
                 desc_date = article.select('.desc-block .card-date')[0].text.strip()
+                range = desc_date.split(' au ');
+                start_date = dateparser.parse(range[0], languages=['fr'], settings={'TIMEZONE': "Europe/Paris", 'RETURN_AS_TIMEZONE_AWARE': True})
 
                 #type
                 type = article.select('.desc-block .rubrique-project')[0].text.strip()
@@ -81,10 +84,10 @@ class BpiScrapper:
                     content = p[0].text.strip()
 
                 #generate description
-                description =  f"[{type}][{desc_date}]\n{content}"
+                description =  f"[{type}][{start_date}]\n{content}"
 
 
-                scraps.append({"title": unescape(title), "link":link, "content" : unescape(content), "description" : unescape(description), "date": desc_date, "type":type})
+                scraps.append({"title": unescape(title), "link":link, "content" : unescape(content), "description" : unescape(description), "date": start_date, "type":type})
         if verbose:
             print(f"{len(scraps)} posts extracted on page {pageNumber}")        
         return scraps
@@ -101,9 +104,7 @@ class BpiScrapper:
         fg.title('BPI - Appels à projets & concours')
         fg.id(self.BPI_URL)
         fg.author( {'name':'Bpifrance'} )
-
         fg.link(href=self.BPI_URL, rel='alternate',  )
-        
         fg.subtitle('Powered by www.la-forge.ai')
         fg.language('fr')
 
@@ -116,8 +117,9 @@ class BpiScrapper:
                 fe.title(article['title'])
                 fe.link(href=article['link'])
                 fe.description(article['description'])
+                fe.pubDate(article['date'])
         except Exception as e:
-            print('exeption')
+            print(e)
             capture_exception(e)
         atomfeed = fg.atom_str(pretty=True) # Get the ATOM feed as string
         return atomfeed

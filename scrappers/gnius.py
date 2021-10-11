@@ -1,3 +1,4 @@
+from datetime import date
 from html import unescape
 import requests
 from bs4 import BeautifulSoup
@@ -5,6 +6,7 @@ from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 import sentry_sdk
 from sentry_sdk import capture_exception
+import dateparser
 
 sentry_sdk.init(
     "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
@@ -30,7 +32,8 @@ class GniusScrapper:
             res['title'] = unescape(article.find("h3").text.strip())
             res['description']= unescape(article.select('.o-teaser__infos--top')[0].text.strip())
             res['link']= self.GNIUS_HOST+link['href']
-            res['date']= article.select(".o-teaser__infos .fw-medium .a-info__text")[0].text.strip()
+            date= article.select(".o-teaser__infos .fw-medium .a-info__text")[0].text.strip()
+            res['date'] = dateparser.parse(date, languages=['fr'], settings={'TIMEZONE': "Europe/Paris", 'RETURN_AS_TIMEZONE_AWARE': True})
             res['content']= unescape(link.text.strip())
             scraps.append(res)
 
@@ -51,7 +54,7 @@ class GniusScrapper:
         fg = FeedGenerator()
         fg.title('Gnius - Actualités')
         fg.id(self.GNIUS_URL)
-        fg.author( {'name':'Bpifrance'} )
+        fg.author( {'name':'Gnius'} )
         fg.link(href=self.GNIUS_URL, rel='alternate' )
         fg.subtitle('Powered by www.la-forge.ai')
         fg.language('fr')
@@ -65,8 +68,9 @@ class GniusScrapper:
                 fe.title(article['title'])
                 fe.link(href=article['link'])
                 fe.description(article['description'])
+                fe.pubDate(article['date'])
         except Exception as e:
-            print('exeption')
+            print(e)
             capture_exception(e)
 
         atomfeed = fg.atom_str(pretty=True) # Get the ATOM feed as string
