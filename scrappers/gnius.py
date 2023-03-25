@@ -1,4 +1,3 @@
-from datetime import date
 from html import unescape
 import requests
 from bs4 import BeautifulSoup
