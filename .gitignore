@@ -2,3 +2,6 @@ __pycache__/*
 *venv
 .python-version
 *.pyc
+
+## PM2 config file
+ecosystem.config.js
