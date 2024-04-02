@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "Python : scrapper",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "program": "scrapper.py",
       "args": ["8000"],
