@@ -1,9 +1,6 @@
-
-from scrappers.gnius import GniusScrapper
-from scrappers.bpi import BpiScrapper
-import sys
+import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
-
+import sys
 
 class RssRequestHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -13,12 +10,24 @@ class RssRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        rss = '<?xml version="1.0" encoding="UTF-8"?><xml></xml>'.encode(
-            'utf8')
-        if (self.path[0:4] == "/bpi"):
-            rss = self.bpi_scrapper.generate_feed(verbose=False)
-        elif (self.path[0:6] == "/gnius"):
-            rss = self.gnius_scrapper.generate_feed(verbose=False)
+        rss = '<?xml version="1.0" encoding="UTF-8"?><xml></xml>'.encode('utf8')
+
+        if self.path.startswith("/bpi"):
+            rss_file_path = os.path.join('feeds', 'bpi_feed.xml')
+        elif self.path.startswith("/gnius"):
+            rss_file_path = os.path.join('feeds', 'gnius_feed.xml')
+        else:
+            self.send_response(404)
+            self.end_headers()
+            return
+
+        try:
+            with open(rss_file_path, 'rb') as file:
+                rss = file.read()
+        except FileNotFoundError:
+            self.send_response(404)
+            self.end_headers()
+            return
 
         self.wfile.write(rss)
 
@@ -27,8 +36,6 @@ class RssRequestHandler(BaseHTTPRequestHandler):
 
 
 def main(server_class=HTTPServer, handler_class=RssRequestHandler, addr="localhost", port=8000):
-    handler_class.bpi_scrapper = BpiScrapper()
-    handler_class.gnius_scrapper = GniusScrapper()
     server_address = (addr, port)
     httpd = server_class(server_address, handler_class)
 
