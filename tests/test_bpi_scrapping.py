@@ -39,11 +39,6 @@ def test_get_article_title_link(bpi_data_soup, bpi_scrapper):
         "https://www.bpifrance.fr/nos-appels-a-projets-concours/appel-a-projets-france-chili-greentech",
     )
 
-def test_get_article_link(bpi_data_soup, bpi_scrapper):
-    articles = bpi_scrapper.get_articles(bpi_data_soup)
-    _, link = bpi_scrapper.get_article_title_and_link(articles[0])
-    assert link == "https://www.bpifrance.fr/nos-appels-a-projets-concours/appel-a-projets-france-chili-greentech"
-
 def test_get_article_full_content(bpi_data_soup, bpi_scrapper):
     articles = bpi_scrapper.get_articles(bpi_data_soup)
     _, link = bpi_scrapper.get_article_title_and_link(articles[0])

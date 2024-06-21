@@ -12,20 +12,29 @@ templates = Jinja2Templates(directory="templates")
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/bpi", response_class=Response, responses={200: {"content": {"application/rss+xml": {}}}})
+@app.get("/bpi", response_class=Response)
 async def get_bpi_feed():
-    return get_rss_feed('feeds/bpi_feed.xml')
+    feed_content = get_rss_feed('feeds/bpi_feed.xml')
+    if feed_content is None:
+        return Response(status_code=500, content="Internal Server Error: Could not read RSS feed")
+    headers = {"Content-Type": "application/rss+xml; charset=utf-8"}
+    return Response(content=feed_content, media_type='application/rss+xml', headers=headers)
 
-@app.get("/gnius", response_class=Response, responses={200: {"content": {"application/rss+xml": {}}}})
+@app.get("/gnius", response_class=Response)
 async def get_gnius_feed():
-    return get_rss_feed('feeds/gnius_feed.xml')
+    feed_content = get_rss_feed('feeds/gnius_feed.xml')
+    if feed_content is None:
+        return Response(status_code=500, content="Internal Server Error: Could not read RSS feed")
+    headers = {"Content-Type": "application/rss+xml; charset=utf-8"}
+    return Response(content=feed_content, media_type='application/rss+xml', headers=headers)
 
-def get_rss_feed(file_path: str):
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found")
-    with open(file_path, 'rb') as file:
-        rss_content = file.read()
-    return Response(content=rss_content, media_type="application/rss+xml; charset=utf-8")
+def get_rss_feed(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error reading the file: {e}")
+        return None
 
 if __name__ == "__main__":
     import uvicorn
