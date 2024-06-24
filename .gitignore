@@ -5,3 +5,6 @@ __pycache__/*
 
 ## PM2 config file
 ecosystem.config.js
+
+## generated feeds should be ignored
+feeds
