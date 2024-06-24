@@ -21,12 +21,14 @@ pip install -r requirements.txt
 Either launch it manually:
 
 ```sh
+python3 generate_feeds.py
 python3 scrapper.py 8000
 ```
 
-or use the `start_service.sh` script, which can be put in a crontab if necessary
+or use the `generate_feeds.sh` script to generate the feeds every hour, which can be put in a crontab if necessary : `0 * * * * {path_to_file}`
 
 ```sh
+sh ./generate_feeds.sh
 sh ./start_service.sh
 ```
 
