@@ -3,7 +3,9 @@ from scrappers.bpi import BpiScrapper
 import os
 
 def main():
-    feeds_dir = 'feeds'
+    
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    feeds_dir = os.path.join(script_dir, 'feeds')
     os.makedirs(feeds_dir, exist_ok=True)
 
     bpi_scrapper = BpiScrapper()

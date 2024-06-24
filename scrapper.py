@@ -1,47 +1,41 @@
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import Response
+from fastapi.templating import Jinja2Templates
+from fastapi.requests import Request
 import os
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import sys
-
-class RssRequestHandler(BaseHTTPRequestHandler):
-    def _set_headers(self):
-        self.send_response(200)
-        self.send_header("Content-type", "application/rss+xml; charset=utf-8")
-        self.end_headers()
-
-    def do_GET(self):
-        self._set_headers()
-        rss = '<?xml version="1.0" encoding="UTF-8"?><xml></xml>'.encode('utf8')
-
-        if self.path.startswith("/bpi"):
-            rss_file_path = os.path.join('feeds', 'bpi_feed.xml')
-        elif self.path.startswith("/gnius"):
-            rss_file_path = os.path.join('feeds', 'gnius_feed.xml')
-        else:
-            self.send_response(404)
-            self.end_headers()
-            return
-
-        try:
-            with open(rss_file_path, 'rb') as file:
-                rss = file.read()
-        except FileNotFoundError:
-            self.send_response(404)
-            self.end_headers()
-            return
-
-        self.wfile.write(rss)
-
-    def do_HEAD(self):
-        self._set_headers()
 
 
-def main(server_class=HTTPServer, handler_class=RssRequestHandler, addr="localhost", port=8000):
-    server_address = (addr, port)
-    httpd = server_class(server_address, handler_class)
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
-    print(f"Starting httpd server on {addr}:{port}")
-    httpd.serve_forever()
+@app.get("/", response_class=Response)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/bpi", response_class=Response)
+async def get_bpi_feed():
+    feed_content = get_rss_feed('feeds/bpi_feed.xml')
+    if feed_content is None:
+        return Response(status_code=500, content="Internal Server Error: Could not read RSS feed")
+    headers = {"Content-Type": "application/rss+xml; charset=utf-8"}
+    return Response(content=feed_content, media_type='application/rss+xml', headers=headers)
+
+@app.get("/gnius", response_class=Response)
+async def get_gnius_feed():
+    feed_content = get_rss_feed('feeds/gnius_feed.xml')
+    if feed_content is None:
+        return Response(status_code=500, content="Internal Server Error: Could not read RSS feed")
+    headers = {"Content-Type": "application/rss+xml; charset=utf-8"}
+    return Response(content=feed_content, media_type='application/rss+xml', headers=headers)
+
+def get_rss_feed(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error reading the file: {e}")
+        return None
 
 if __name__ == "__main__":
-    main(port=int(sys.argv[1]))
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

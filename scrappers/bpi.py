@@ -1,40 +1,23 @@
+from scrappers.base import BaseScrapper
 from html import unescape
 import requests
 import pprint
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import time
-import sentry_sdk
-from sentry_sdk import capture_exception
 import dateparser
-import feedparser
+from sentry_sdk import capture_exception
+import sentry_sdk
 
-sentry_sdk.init(
-"https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
-# Set traces_sample_rate to 1.0 to capture 100%
-# of transactions for performance monitoring.
-# We recommend adjusting this value in production.
-traces_sample_rate=1.0,
-)
 
-class BpiScrapper:
+class BpiScrapper(BaseScrapper):
     def __init__(self):
-        self.URL = "https://www.bpifrance.fr/views/ajax?_wrapper_format=drupal_ajax"
-        self.BPI_URL = "https://www.bpifrance.fr/nos-appels-a-projets-concours"
-        self.BPI_HOST = "https://www.bpifrance.fr"
-
-    def scrapPages(self, verbose=False):
-        posts = []
-        page = 0
-        count_for_current_page = -1
-        while count_for_current_page != 0:
-            posts_on_current_page = self.scrapPage(pageNumber=page, verbose=verbose)
-            posts.extend(posts_on_current_page)
-            count_for_current_page = len(posts_on_current_page)
-            page = page + 1
-
-        return posts
+        super().__init__(
+            base_url="https://www.bpifrance.fr/views/ajax?_wrapper_format=drupal_ajax",
+            host="https://www.bpifrance.fr",
+            feed_title="BPI - Appels à projets & concours",
+            feed_author="Bpifrance",
+            feed_link="https://www.bpifrance.fr/nos-appels-a-projets-concours"
+        )
 
     def scrapPage(self, pageNumber, verbose=False):
         data = {
@@ -45,14 +28,13 @@ class BpiScrapper:
             "view_base_path": "",
             "view_dom_id": "ef9552745c8bdef720fe30fd6af40f43f517516afcef456a33e13f76abc8b567",
             "pager_element": 0,
-            # "page": pageNumber,
             "_drupal_ajax": 1,
             "ajax_page_state[theme]": "bpi_main",
             "ajax_page_state[theme_token]": "QCTlfpv1f8P3RVm2pjQi5_mhEahwndMinor5r369hQU",
             "ajax_page_state[libraries]": "better_exposed_filters/auto_submit,better_exposed_filters/general,bpi_lazy_entity/main,bpi_main/global-scripts,bpi_main/global-styling,paragraphs/drupal.paragraphs.unpublished,quicklink/quicklink,quicklink/quicklink_init,statistics/drupal.statistics,system/base,views/views.ajax,views/views.module",
         }
 
-        paginated_url = f"{self.URL}&page={pageNumber}"
+        paginated_url = f"{self.base_url}&page={pageNumber}"
 
         page = requests.post(paginated_url, data)
         json = page.json()
@@ -85,6 +67,7 @@ class BpiScrapper:
                         "description": unescape(description),
                         "date": start_date,
                         "type": type,
+                        "content_class": "body-content"
                     }
                 )
         if verbose:
@@ -97,7 +80,7 @@ class BpiScrapper:
     def get_article_title_and_link(self, article: BeautifulSoup) -> tuple[str, str]:
         html_title = article.select(".desc-block .desc h3")[0]
         title = html_title.text.strip()
-        link = self.BPI_HOST + html_title.find("a")["href"]
+        link = self.host + html_title.find("a")["href"]
         return title, link
 
     def get_start_date(self, article: BeautifulSoup) -> str:
@@ -122,56 +105,3 @@ class BpiScrapper:
         if p and len(p):
             content = p[0].text.strip()
         return content
-
-    def print_data(self, verbose=False):
-        posts = self.scrapPages()
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(posts)
-        print(f"{len(posts)} extracted")
-
-    def write_feed_to_file(self, feed, filename):
-        with open(filename, 'wb') as file:
-            file.write(feed)
-
-    def get_full_article_content(self, article_url):
-
-        response = requests.get(article_url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, "html.parser")
-            article_content = soup.find(class_="body-content").get_text()
-            return article_content
-        else:
-            print(f"Failed to fetch article content from URL: {article_url}")
-            return ""
-
-    def generate_feed(self, verbose=True):
-        fg = FeedGenerator()
-        fg.title("BPI - Appels à projets & concours")
-        fg.id(self.BPI_URL)
-        fg.author({"name": "Bpifrance"})
-        fg.link(href=self.BPI_URL, rel="alternate")
-        fg.subtitle("Powered by www.la-forge.ai")
-        fg.language("fr")
-
-        try:
-            articles = self.scrapPages(verbose=verbose)
-            for article in articles:
-                fe = fg.add_entry()
-                fe.id(article["link"])
-                fe.title(article["title"])
-                fe.link(href=article["link"])
-                fe.description(article["description"])
-                fe.pubDate(article["date"])
-                full_content = self.get_full_article_content(article["link"])
-                if full_content:
-                    fe.content(full_content, type="CDATA")
-        except Exception as e:
-            print(e)
-            capture_exception(e)
-
-        atomfeed = fg.atom_str(pretty=True)
-        return atomfeed
-
-    def update_feed_file(self, filename='bpi_feed.xml'):
-        feed = self.generate_feed(verbose=False)
-        self.write_feed_to_file(feed, filename)
