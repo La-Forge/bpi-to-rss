@@ -42,7 +42,7 @@ def test_get_article_title_link(bpi_data_soup, bpi_scrapper):
 def test_get_article_full_content(bpi_data_soup, bpi_scrapper):
     articles = bpi_scrapper.get_articles(bpi_data_soup)
     _, link = bpi_scrapper.get_article_title_and_link(articles[0])
-    full_content = bpi_scrapper.get_full_article_content(link)
+    full_content = bpi_scrapper.get_full_article_content(link, 'body-content')
     assert len(full_content)>0
 
 def test_get_start_date(bpi_data_soup, bpi_scrapper):
