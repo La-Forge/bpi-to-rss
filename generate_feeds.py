@@ -12,7 +12,7 @@ def main(verbose, update_bpi, update_gnius):
     bpi_scrapper = BpifranceScrapper()
     gnius_scrapper = GniusScrapper()
 
-    bpi_feed_file = os.path.join(feeds_dir, 'bpi_feed.xml')
+    bpi_feed_file = os.path.join(feeds_dir, BPI_FEED_PATH)
     gnius_feed_file = os.path.join(feeds_dir, 'gnius_feed.xml')
 
     if update_bpi:

@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 import dateparser
 
+FEED_PATH = 'feeds/bpi_feed.xml'
+
 class BpifranceScrapper(BaseScrapper):
     def __init__(self):
         super().__init__(

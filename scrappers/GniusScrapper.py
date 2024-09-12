@@ -4,6 +4,9 @@ import requests
 from bs4 import BeautifulSoup
 import dateparser
 
+
+FEED_PATH = 'feeds/gnius_feed.xml'
+
 class GniusScrapper(BaseScrapper):
     def __init__(self):
         super().__init__(
