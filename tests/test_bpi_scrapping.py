@@ -35,8 +35,8 @@ def test_get_articles(bpi_data_soup, bpi_scrapper):
 def test_get_article_title_link(bpi_data_soup, bpi_scrapper):
     articles = bpi_scrapper.get_articles(bpi_data_soup)
     assert bpi_scrapper.get_article_title_and_link(articles[0]) == (
-        "Multicap croissance N°4 (MC4)",
-        "https://www.bpifrance.fr/nos-appels-a-projets-concours/multicap-croissance-ndeg4-mc4",
+        "Challenge prévention : démontrer la valeur des innovations en vie réelle",
+        "https://www.bpifrance.fr/nos-appels-a-projets-concours/challenge-prevention-demontrer-la-valeur-des-innovations-en-vie-reelle",
     )
 
 def test_get_article_full_content(bpi_data_soup, bpi_scrapper):
