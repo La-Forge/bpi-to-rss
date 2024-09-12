@@ -82,6 +82,6 @@ class BaseScrapper:
         atomfeed = fg.atom_str(pretty=True)
         return atomfeed
 
-    def update_feed_file(self, filename='feed.xml'):
-        feed = self.generate_feed(verbose=False)
+    def update_feed_file(self, filename='feed.xml', verbose=False):
+        feed = self.generate_feed(verbose=verbose)
         self.write_feed_to_file(feed, filename)
