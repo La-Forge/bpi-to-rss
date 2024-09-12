@@ -35,8 +35,8 @@ def test_get_articles(bpi_data_soup, bpi_scrapper):
 def test_get_article_title_link(bpi_data_soup, bpi_scrapper):
     articles = bpi_scrapper.get_articles(bpi_data_soup)
     assert bpi_scrapper.get_article_title_and_link(articles[0]) == (
-        "Appel à Projets France-Chili –Greentech",
-        "https://www.bpifrance.fr/nos-appels-a-projets-concours/appel-a-projets-france-chili-greentech",
+        "Multicap croissance N°4 (MC4)",
+        "https://www.bpifrance.fr/nos-appels-a-projets-concours/multicap-croissance-ndeg4-mc4",
     )
 
 def test_get_article_full_content(bpi_data_soup, bpi_scrapper):
