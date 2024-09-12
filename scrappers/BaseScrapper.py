@@ -1,9 +1,7 @@
-from html import unescape
 import requests
 import pprint
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
-import dateparser
 from sentry_sdk import capture_exception
 import sentry_sdk
 
@@ -85,3 +83,4 @@ class BaseScrapper:
     def update_feed_file(self, filename='feed.xml', verbose=False):
         feed = self.generate_feed(verbose=verbose)
         self.write_feed_to_file(feed, filename)
+        return feed
