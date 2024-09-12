@@ -1,18 +1,14 @@
-from scrappers.base import BaseScrapper
+from scrappers.BaseScrapper import BaseScrapper
 from html import unescape
 import requests
-import pprint
 from bs4 import BeautifulSoup
-from feedgen.feed import FeedGenerator
 import dateparser
-from sentry_sdk import capture_exception
-import sentry_sdk
 
-
-class BpiScrapper(BaseScrapper):
+class BpifranceScrapper(BaseScrapper):
     def __init__(self):
         super().__init__(
-            base_url="https://www.bpifrance.fr/views/ajax?_wrapper_format=drupal_ajax",
+            base_url = "https://www.bpifrance.fr/views/ajax?_wrapper_format=drupal_ajax&labels=All&view_name=events_before_end_date&view_display_id=events_finishing_more_week&view_args=496&view_path=%2Fnode%2F7620&view_base_path=&view_dom_id=de2b6579af442525efdb3720e2433d578ae6af46c8d2cb9812d17facde4592ff&pager_element=0&_drupal_ajax=1&ajax_page_state%5Btheme%5D=bpi_main&ajax_page_state%5Btheme_token%5D=vUo2YdcgaSQx1XGJHIa_CX496Ili2qa2-fmRJpfpgV8&ajax_page_state%5Blibraries%5D=eJxtztsOwjAIBuAXqusjNXTFDkcPFqrOp3fuYotxN-TnCxA8qmJz-KpFMLgr8dqKha7FSfeJ1PjzkYgZG7DxlRzDe3GYlXSxCShv-A02cvHAFxkbVZV_14UpR1OhQWxQJ7Gh9Qo8HDL0XLtnkgmDuXca53Vltns6M0d5_VwUlERp3K8eYmQRxWQ9CJoH4VPsVge4wesHUgmd8QPX0HW2",
+            #base_url="https://www.bpifrance.fr/views/ajax?_wrapper_format=drupal_ajax",
             host="https://www.bpifrance.fr",
             feed_title="BPI - Appels à projets & concours",
             feed_author="Bpifrance",
@@ -20,23 +16,30 @@ class BpiScrapper(BaseScrapper):
         )
 
     def scrapPage(self, pageNumber, verbose=False):
-        data = {
-            "view_name": "events_before_end_date",
-            "view_display_id": "events_finishing_more_week",
-            "view_args": 496,
-            "view_path": "/node/7620",
-            "view_base_path": "",
-            "view_dom_id": "ef9552745c8bdef720fe30fd6af40f43f517516afcef456a33e13f76abc8b567",
-            "pager_element": 0,
-            "_drupal_ajax": 1,
-            "ajax_page_state[theme]": "bpi_main",
-            "ajax_page_state[theme_token]": "QCTlfpv1f8P3RVm2pjQi5_mhEahwndMinor5r369hQU",
-            "ajax_page_state[libraries]": "better_exposed_filters/auto_submit,better_exposed_filters/general,bpi_lazy_entity/main,bpi_main/global-scripts,bpi_main/global-styling,paragraphs/drupal.paragraphs.unpublished,quicklink/quicklink,quicklink/quicklink_init,statistics/drupal.statistics,system/base,views/views.ajax,views/views.module",
+        payload = {
+        }
+
+        headers = {
+            'accept': 'application/json, text/javascript, */*; q=0.01',
+            'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+            'cache-control': 'no-cache',
+            'cookie': '_hjSessionUser_1857115=eyJpZCI6IjcxMDBmYTlkLWY3YWQtNWE0MC05ZDZkLTFjODJiNzU2MmY2NCIsImNyZWF0ZWQiOjE3MDE2OTk5MDg4ODEsImV4aXN0aW5nIjp0cnVlfQ==; tCdebugLib=1; TCPID=12455955114162466917; TC_PRIVACY=0%40017%7C404%7C3480%40277%2C279%2C280%2C281%2C282%2C283%2C284%2C287%2C288%2C289%2C302%2C303%2C304%2C309%40240%401716537312946%2C1716537312946%2C1732089312946%40; TC_PRIVACY_CENTER=277%2C279%2C280%2C281%2C282%2C283%2C284%2C287%2C288%2C289%2C302%2C303%2C304%2C309; _pk_id.1.0856=e81da058ea127a2e.1716537319.; _pk_id.2.0856=6a88671d60ca1dc3.1716537319.; _mr_id=6a88671d60ca1dc3',
+            'pragma': 'no-cache',
+            'priority': 'u=1, i',
+            'referer': 'https://www.bpifrance.fr/nos-appels-a-projets-concours',
+            'sec-ch-ua': '"Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+            'x-requested-with': 'XMLHttpRequest'
         }
 
         paginated_url = f"{self.base_url}&page={pageNumber}"
 
-        page = requests.post(paginated_url, data)
+        page = requests.post(paginated_url, headers=headers,data=payload)
         json = page.json()
         content = next(
             x for x in json if "method" in x and x["method"] == "replaceWith"

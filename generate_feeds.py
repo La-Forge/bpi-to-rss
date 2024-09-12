@@ -1,5 +1,5 @@
-from scrappers.gnius import GniusScrapper
-from scrappers.bpi import BpiScrapper
+from scrappers.GniusScrapper import GniusScrapper
+from scrappers.BpifranceScrapper import BpifranceScrapper
 import os
 import argparse
 
@@ -9,7 +9,7 @@ def main(verbose, update_bpi, update_gnius):
     feeds_dir = os.path.join(script_dir, 'feeds')
     os.makedirs(feeds_dir, exist_ok=True)
 
-    bpi_scrapper = BpiScrapper()
+    bpi_scrapper = BpifranceScrapper()
     gnius_scrapper = GniusScrapper()
 
     bpi_feed_file = os.path.join(feeds_dir, 'bpi_feed.xml')

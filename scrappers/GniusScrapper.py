@@ -1,12 +1,8 @@
-from scrappers.base import BaseScrapper
+from scrappers.BaseScrapper import BaseScrapper
 from html import unescape
 import requests
-import pprint
 from bs4 import BeautifulSoup
-from feedgen.feed import FeedGenerator
 import dateparser
-from sentry_sdk import capture_exception
-import sentry_sdk
 
 class GniusScrapper(BaseScrapper):
     def __init__(self):
