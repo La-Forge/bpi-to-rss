@@ -6,7 +6,7 @@
 import pytest
 from bs4 import BeautifulSoup
 
-from scrappers.BpifranceScrapper import BpifranceFeedGeenerator
+from scrappers.BpifranceScrapper import BpifranceScrapper
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def bpi_data_soup():
 
 @pytest.fixture
 def bpi_scrapper():
-    return BpifranceFeedGeenerator()
+    return BpifranceScrapper()
 
 
 @pytest.fixture
