@@ -4,11 +4,13 @@ from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 from sentry_sdk import capture_exception
 import sentry_sdk
+import os
 
 sentry_sdk.init(
     "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
     traces_sample_rate=1.0,
 )
+
 
 class BaseScrapper:
     def __init__(self, base_url, host, feed_title, feed_author, feed_link):
@@ -39,7 +41,11 @@ class BaseScrapper:
         print(f"{len(posts)} extracted")
 
     def write_feed_to_file(self, feed, filename):
-        with open(filename, 'wb') as file:
+        # ensure path to filename exists
+        path = os.path.dirname(filename)
+        os.makedirs(path, exist_ok=True)
+
+        with open(filename, "wb") as file:
             file.write(feed)
 
     def get_full_article_content(self, article_url, content_class):
@@ -70,7 +76,9 @@ class BaseScrapper:
                 fe.link(href=article["link"])
                 fe.description(article["description"])
                 fe.pubDate(article["date"])
-                full_content = self.get_full_article_content(article["link"], article.get('content_class'))
+                full_content = self.get_full_article_content(
+                    article["link"], article.get("content_class")
+                )
                 if full_content:
                     fe.content(full_content, type="CDATA")
         except Exception as e:
@@ -80,7 +88,7 @@ class BaseScrapper:
         atomfeed = fg.atom_str(pretty=True)
         return atomfeed
 
-    def update_feed_file(self, filename='feed.xml', verbose=False):
+    def update_feed_file(self, filename="feed.xml", verbose=False):
         feed = self.generate_feed(verbose=verbose)
         self.write_feed_to_file(feed, filename)
         return feed
