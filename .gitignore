@@ -2,6 +2,7 @@ __pycache__/*
 *venv
 .python-version
 *.pyc
+.DS_Store
 
 ## PM2 config file
 ecosystem.config.js

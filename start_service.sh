@@ -1,1 +1,1 @@
-nohup python3 scrapper.py 8000 &
+nohup python3 serve_feeds.py 8000 &
