@@ -21,14 +21,19 @@ class BaseScrapper:
         self.feed_link = feed_link
 
     def scrapPages(self, verbose=False):
+        if not self.has_pagination: # add pagination to scrappers to adapt the method
+            return self.scrapPage(pageNumber=0, verbose=verbose)
+
         posts = []
         page = 0
         count_for_current_page = -1
+
         while count_for_current_page != 0:
             posts_on_current_page = self.scrapPage(pageNumber=page, verbose=verbose)
-            posts.extend(posts_on_current_page)
             count_for_current_page = len(posts_on_current_page)
-            page = page + 1
+            posts.extend(posts_on_current_page)
+            page += 1
+
         return posts
 
     def scrapPage(self, pageNumber, verbose=False):
@@ -49,14 +54,15 @@ class BaseScrapper:
             file.write(feed)
 
     def get_full_article_content(self, article_url, content_class):
-        response = requests.get(article_url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, "html.parser")
-            article_content = soup.find(class_=content_class).get_text()
-            return article_content
-        else:
-            print(f"Failed to fetch article content from URL: {article_url}")
-            return ""
+        if self.has_pagination:
+            response = requests.get(article_url)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.content, "html.parser")
+                article_content = soup.find(class_=content_class).get_text()
+                return article_content
+            else:
+                print(f"Failed to fetch article content from URL: {article_url}")
+                return ""
 
     def generate_feed(self, verbose=True):
         fg = FeedGenerator()

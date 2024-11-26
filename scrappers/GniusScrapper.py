@@ -8,6 +8,9 @@ import dateparser
 FEED_PATH = 'feeds/gnius_feed.xml'
 
 class GniusScrapper(BaseScrapper):
+    """
+    Classe pour scrapper les données de GNius - actualités. 
+    """
     def __init__(self):
         super().__init__(
             base_url="https://gnius.esante.gouv.fr/fr/a-la-une/actualites?page=<page-number>",
@@ -16,6 +19,7 @@ class GniusScrapper(BaseScrapper):
             feed_author="Gnius",
             feed_link="https://gnius.esante.gouv.fr/fr/a-la-une/actualites"
         )
+        self.has_pagination = True
 
     def scrapPage(self, pageNumber, verbose=False):
         page = requests.get(self.base_url.replace("<page-number>", str(pageNumber)))
