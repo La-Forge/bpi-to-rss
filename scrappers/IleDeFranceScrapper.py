@@ -1,10 +1,10 @@
 import requests
-from scrappers.BaseScrapper import BaseScrapper
+from scrappers.APIScrapper import APIScrapper
 import datetime 
 
 FEED_PATH = 'feeds/idf_feed.xml'
 
-class IleDeFranceScrapper(BaseScrapper):
+class IleDeFranceScrapper(APIScrapper):
     """
     Classe pour scrapper les données de l'Ile-de-France - appel à projets. 
     """
@@ -17,7 +17,6 @@ class IleDeFranceScrapper(BaseScrapper):
             feed_link="https://data.iledefrance.fr/explore/dataset/aides-appels-a-projets/",
         )
         self.limit_per_request = 100  
-        self.has_pagination = False
 
     def scrapPages(self, verbose=False):
         """

@@ -1,13 +1,15 @@
-from scrappers.BaseScrapper import BaseScrapper
+from scrappers.WebScrapper import WebScrapper
 from html import unescape
 import requests
 from bs4 import BeautifulSoup
 import dateparser
+from feedgen.feed import FeedGenerator
+from sentry_sdk import capture_exception
 
 
 FEED_PATH = 'feeds/gnius_feed.xml'
 
-class GniusScrapper(BaseScrapper):
+class GniusScrapper(WebScrapper):
     """
     Classe pour scrapper les données de GNius - actualités. 
     """
@@ -19,7 +21,6 @@ class GniusScrapper(BaseScrapper):
             feed_author="Gnius",
             feed_link="https://gnius.esante.gouv.fr/fr/a-la-une/actualites"
         )
-        self.has_pagination = True
 
     def scrapPage(self, pageNumber, verbose=False):
         page = requests.get(self.base_url.replace("<page-number>", str(pageNumber)))
