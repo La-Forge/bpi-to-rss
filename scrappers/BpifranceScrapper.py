@@ -1,12 +1,18 @@
-from scrappers.BaseScrapper import BaseScrapper
+from scrappers.WebScrapper import WebScrapper
 from html import unescape
 import requests
 from bs4 import BeautifulSoup
 import dateparser
+from feedgen.feed import FeedGenerator
+from sentry_sdk import capture_exception
+
 
 FEED_PATH = 'feeds/bpi_feed.xml'
 
-class BpifranceScrapper(BaseScrapper):
+class BpifranceScrapper(WebScrapper):
+    """
+    Classe pour scrapper les données de BpiFrance - appel à projets. 
+    """
     def __init__(self):
         super().__init__(
             base_url = "https://www.bpifrance.fr/views/ajax?_wrapper_format=drupal_ajax&labels=All&view_name=events_before_end_date&view_display_id=events_finishing_more_week&view_args=496&view_path=%2Fnode%2F7620&view_base_path=&view_dom_id=de2b6579af442525efdb3720e2433d578ae6af46c8d2cb9812d17facde4592ff&pager_element=0&_drupal_ajax=1&ajax_page_state%5Btheme%5D=bpi_main&ajax_page_state%5Btheme_token%5D=vUo2YdcgaSQx1XGJHIa_CX496Ili2qa2-fmRJpfpgV8&ajax_page_state%5Blibraries%5D=eJxtztsOwjAIBuAXqusjNXTFDkcPFqrOp3fuYotxN-TnCxA8qmJz-KpFMLgr8dqKha7FSfeJ1PjzkYgZG7DxlRzDe3GYlXSxCShv-A02cvHAFxkbVZV_14UpR1OhQWxQJ7Gh9Qo8HDL0XLtnkgmDuXca53Vltns6M0d5_VwUlERp3K8eYmQRxWQ9CJoH4VPsVge4wesHUgmd8QPX0HW2",
