@@ -31,6 +31,7 @@ class WebScrapper(BaseScrapper):
     def get_full_article_content(self, article_url, content_class):
         response = requests.get(article_url)
         if response.status_code == 200:
+            response.encoding = response.apparent_encoding
             soup = BeautifulSoup(response.content, "html.parser")
             article_content = soup.find(class_=content_class).get_text()
             return article_content
@@ -60,7 +61,7 @@ class WebScrapper(BaseScrapper):
                     article["link"], article.get("content_class")
                 )
                 if full_content:
-                    fe.content(full_content, type="CDATA")
+                    fe.content(full_content)
         except Exception as e:
             print(e)
             capture_exception(e)
