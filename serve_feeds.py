@@ -5,6 +5,7 @@ from fastapi.requests import Request
 from scrappers.BpifranceScrapper import FEED_PATH as BPI_FEED_PATH
 from scrappers.GniusScrapper import FEED_PATH as GNIUS_FEED_PATH
 from scrappers.IleDeFranceScrapper import FEED_PATH as IDF_FEED_PATH
+from scrappers.ProjetAchatPublicScrapper import ProjetsAchatScrapper, FEED_PATH as PROJET_ACHAT_FEED_PATH
 
 
 app = FastAPI()
@@ -36,21 +37,26 @@ async def get_bpi_feed():
 async def get_gnius_feed():
     return get_feed(feed_content=get_rss_gnius_feed_content())
 
-# add idf direction on the web server
 @app.get("/idf", response_class=Response)
 async def get_idf_feed():
     return get_feed(feed_content=get_rss_idf_feed_content())
 
+@app.get("/projet-achat", response_class=Response)
+async def get_projetachat_feed():
+    return get_feed(feed_content=get_rss_projetachat_feed_content())
+
 
 def get_rss_bpifrance_feed_content():
     return get_rss_feed_content(file_path=BPI_FEED_PATH)
-
 
 def get_rss_gnius_feed_content():
     return get_rss_feed_content(file_path=GNIUS_FEED_PATH)
 
 def get_rss_idf_feed_content():
     return get_rss_feed_content(file_path=IDF_FEED_PATH)
+
+def get_rss_projetachat_feed_content():
+    return get_rss_feed_content(file_path=PROJET_ACHAT_FEED_PATH)
 
 
 def get_rss_feed_content(file_path):
