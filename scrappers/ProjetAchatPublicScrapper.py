@@ -103,7 +103,7 @@ class ProjetsAchatScrapper(APIScrapper):
             description_parts = [
                 f"Description : {fields.get('description', '—')}",
                 f"Statut : {fields.get('statut', 'Pas de statut défini')}",
-                f"Catégorie d'achat : {fields.get("categorie_d_achat", "Pas de catégorie d achat définie")}",
+                f"Catégorie d'achat : {fields.get('categorie_d_achat', 'Pas de catégorie d achat définie')}",
                 f"Date prévisionnelle de publication : {fields.get('date_previsionnelle_de_publication', 'Pas de date prévisionnelle de publication définie')}",
                 f"Entité acheteuse : {entite_nom or '—'} (SIREN : {siren or '—'})",
                 f"Montant estimé du marché : {fields.get('montant_estime_du_marche', 'Pas de montant estimé du marché défini')}",
