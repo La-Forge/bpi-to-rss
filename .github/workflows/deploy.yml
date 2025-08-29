@@ -50,5 +50,5 @@ jobs:
             docker pull ghcr.io/la-forge/bpi-to-rss:${{ github.sha }}
 
             # Run the new container (adjust ports/volumes/env as needed)
-            docker run -d --name bpi-to-rss -p 8000:8000 \
+            docker run -d --name bpi-to-rss -p 8000:8000 -v ./feeds:/app/feeds \
               ghcr.io/la-forge/bpi-to-rss:${{ github.sha }}
