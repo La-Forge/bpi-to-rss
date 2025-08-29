@@ -1,5 +1,9 @@
 # bpi-to-rss
 
+## Dependencies 
+
+`uv` : install [here](https://docs.astral.sh/uv/getting-started/installation/)
+
 ## installation
 
 1. clone the git repository
@@ -8,12 +12,10 @@
 git clone git@github.com:La-Forge/bpi-to-rss.git
 ```
 
-2. create a virtual env and install the libs
+2. install the dependencies
 
 ```sh
-python -m  venv .venv && source .venv/bin/activate 
-pip install --upgrade pip # if necessary
-pip install -r requirements.txt
+uv sync
 ```
 
 ## launch the web service
