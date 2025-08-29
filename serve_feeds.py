@@ -5,7 +5,8 @@ from fastapi.requests import Request
 from scrappers.BpifranceScrapper import FEED_PATH as BPI_FEED_PATH
 from scrappers.GniusScrapper import FEED_PATH as GNIUS_FEED_PATH
 from scrappers.IleDeFranceScrapper import FEED_PATH as IDF_FEED_PATH
-from scrappers.ProjetAchatPublicScrapper import ProjetsAchatScrapper, FEED_PATH as PROJET_ACHAT_FEED_PATH
+from scrappers.ProjetAchatPublicScrapper import FEED_PATH as PROJET_ACHAT_FEED_PATH
+import uvicorn
 
 
 app = FastAPI()
@@ -69,6 +70,4 @@ def get_rss_feed_content(file_path):
 
 
 if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
