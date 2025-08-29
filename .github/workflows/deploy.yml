@@ -29,8 +29,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ secrets.REPO_NAME }}:latest
+            ghcr.io/${{ secrets.REPO_NAME }}:${{ github.sha }}
 
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@master
@@ -47,8 +47,8 @@ jobs:
             docker rm bpi-to-rss || true
 
             # Pull latest image
-            docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
+            docker pull ghcr.io/${{ secrets.REPO_NAME }}:${{ github.sha }}
 
             # Run the new container (adjust ports/volumes/env as needed)
             docker run -d --name bpi-to-rss -p 8000:8000 \
-              ghcr.io/${{ github.repository }}:${{ github.sha }}
+              ghcr.io/${{ secrets.REPO_NAME }}:${{ github.sha }}
