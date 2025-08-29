@@ -18,4 +18,4 @@ jobs:
           uv add pytest==8.1.1
       - name: Run tests with pytest
         run: |
-          pytest
+          uv run pytest
