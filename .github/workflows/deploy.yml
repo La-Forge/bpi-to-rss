@@ -29,8 +29,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ secrets.REPO_NAME }}:latest
-            ghcr.io/${{ secrets.REPO_NAME }}:${{ github.sha }}
+            ghcr.io/la-forge/bpi-to-rss:latest
+            ghcr.io/la-forge/bpi-to-rss:${{ github.sha }}
 
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@master
