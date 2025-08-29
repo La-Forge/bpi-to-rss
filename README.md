@@ -34,4 +34,8 @@ sh ./generate_feeds.sh
 sh ./start_service.sh
 ```
 
+## search for terms in Projet Achat
+You can now search for terms in the URL for the Projet Achat branch, by using the ?q='chosen terms' at the end of the URL. 
+
+Example : https://rss.la-forge.dev/projet-achat?q=intelligence artificielle in your broser. 
 
