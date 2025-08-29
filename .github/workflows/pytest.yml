@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync
-          uv add pytest==8.11
+          uv add pytest==8.1.1
       - name: Run tests with pytest
         run: |
           pytest
