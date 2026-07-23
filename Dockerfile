@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN uv sync
+RUN uv sync --frozen --no-dev
 
 EXPOSE 8000
 
