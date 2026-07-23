@@ -3,14 +3,20 @@ name = "bpi-to-rss"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
-	"feedgen>=0.9.0",
-	"requests>=2.24.0",
-	"beautifulsoup4==4.9.3",
-	"sentry-sdk==2.8.0",
-	"dateparser==1.2.0",
-	"feedparser==6.0.11",
-	"fastapi==0.111.0",
-	"uvicorn>=0.30.0"
+	"feedgen>=0.9.0,<2.0.0",
+	"requests>=2.24.0,<3.0.0",
+	"beautifulsoup4>=4.9.3,<5.0.0",
+	"sentry-sdk>=2.8.0,<3.0.0",
+	"dateparser>=1.3.0,<2.0.0",
+	"feedparser>=6.0.11,<7.0.0",
+	"fastapi>=0.118.0,<1.0.0",
+	"uvicorn>=0.30.0,<1.0.0",
+	"jinja2>=3.1.6,<4.0.0"
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.1.1,<9.0.0",
 ]
