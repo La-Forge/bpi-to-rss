@@ -35,7 +35,11 @@ class APIScrapper(BaseScrapper):
                 fe.pubDate(article["date"])
         except Exception as e:
             print(e)
-            capture_exception(e)
+            try:
+                capture_exception(e)
+            except Exception:
+                # Avoid secondary crashes (e.g., TypeError: cannot pickle 'FrameLocalsProxy')
+                pass
 
         atomfeed = fg.atom_str(pretty=True)
         return atomfeed

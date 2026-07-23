@@ -67,6 +67,11 @@ class ProjetsAchatScrapper(APIScrapper):
             }
 
             response = requests.get(self.base_url, params=params)
+            if response.status_code == 400:
+                # The API rejects requests once offset exceeds its hard pagination ceiling.
+                if verbose:
+                    print(f"Offset {offset} rejected by API (400), stopping pagination.")
+                break
             response.raise_for_status()
             data = response.json()
 
@@ -82,7 +87,10 @@ class ProjetsAchatScrapper(APIScrapper):
             if len(current_records) < self.limit_per_request:
                 break
 
+            total_count = data.get("total_count")
             offset += self.limit_per_request
+            if total_count is not None and offset >= total_count:
+                break
 
         if verbose:
             print(f"Total récupéré : {len(all_records)}")
