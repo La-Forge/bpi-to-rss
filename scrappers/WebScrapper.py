@@ -49,7 +49,17 @@ class WebScrapper(BaseScrapper):
         # Normalize the URL to avoid cases like 'www.bpifrance.frhttps'
         normalized_url = self._normalize_url(article_url)
         try:
-            response = requests.get(normalized_url, timeout=15)
+            response = requests.get(
+                normalized_url,
+                timeout=15,
+                headers={
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36"
+                    )
+                },
+            )
         except Exception as req_err:
             print(f"Failed to fetch article content (network error): {normalized_url} -> {req_err}")
             return ""
