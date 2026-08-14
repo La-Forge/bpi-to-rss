@@ -1,4 +1,5 @@
 """Unit tests for IleDeFranceScrapper parsing logic (no network)."""
+
 import scrappers.IleDeFranceScrapper as mod
 from scrappers.IleDeFranceScrapper import IleDeFranceScrapper
 

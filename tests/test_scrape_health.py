@@ -1,4 +1,5 @@
 """Unit tests for the scrape consistency checker (no network)."""
+
 from pathlib import Path
 
 from monitoring.scrape_health import (
@@ -88,10 +89,9 @@ def test_run_alerts_on_breakage(monkeypatch, tmp_path):
 
 
 def test_trim_history_keeps_bound():
-    history = [
-        {"source": "bpifrance", "run_at": str(i), "count": i}
-        for i in range(100)
-    ] + [{"source": "gnius", "run_at": "x", "count": 1}]
+    history = [{"source": "bpifrance", "run_at": str(i), "count": i} for i in range(100)] + [
+        {"source": "gnius", "run_at": "x", "count": 1}
+    ]
     trimmed = trim_history(history, max_per_source=10)
     bpifrance = [e for e in trimmed if e["source"] == "bpifrance"]
     assert len(bpifrance) == 10

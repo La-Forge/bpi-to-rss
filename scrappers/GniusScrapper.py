@@ -6,19 +6,21 @@ from bs4 import BeautifulSoup
 
 from scrappers.WebScrapper import WebScrapper
 
-FEED_PATH = 'feeds/gnius_feed.xml'
+FEED_PATH = "feeds/gnius_feed.xml"
+
 
 class GniusScrapper(WebScrapper):
     """
     Classe pour scrapper les données de GNius - actualités.
     """
+
     def __init__(self):
         super().__init__(
             base_url="https://gnius.esante.gouv.fr/fr/a-la-une/actualites?page=<page-number>",
             host="https://gnius.esante.gouv.fr",
             feed_title="Gnius - Actualités",
             feed_author="Gnius",
-            feed_link="https://gnius.esante.gouv.fr/fr/a-la-une/actualites"
+            feed_link="https://gnius.esante.gouv.fr/fr/a-la-une/actualites",
         )
 
     def scrapPage(self, pageNumber, verbose=False):

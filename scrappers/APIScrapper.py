@@ -1,4 +1,3 @@
-
 from feedgen.feed import FeedGenerator
 from sentry_sdk import capture_exception
 
@@ -6,7 +5,6 @@ from scrappers.BaseScrapper import BaseScrapper
 
 
 class APIScrapper(BaseScrapper):
-
     def __init__(self, base_url, host, feed_title, feed_author, feed_link):
         self.base_url = base_url
         self.host = host

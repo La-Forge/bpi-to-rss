@@ -46,19 +46,14 @@ def main(verbose, update_bpi, update_gnius, update_idf, update_achat):
         projetachat_scrapper.update_feed_file(achat_feed_file, verbose=verbose)
         print(f"{achat_feed_file} updated.")
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Update feeds with optional verbosity."
-    )
-    parser.add_argument(
-        "--bpifrance", action="store_true", help="Update only Bpifrance feed"
-    )
+    parser = argparse.ArgumentParser(description="Update feeds with optional verbosity.")
+    parser.add_argument("--bpifrance", action="store_true", help="Update only Bpifrance feed")
     parser.add_argument("--gnius", action="store_true", help="Update only Gnius feed")
     parser.add_argument("--idf", action="store_true", help="Update only IDF feed")
     parser.add_argument("--achat", action="store_true", help="Update only Projet Achat feed")
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Enable verbose output"
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
     args = parser.parse_args()
 
     # Si aucune option n'est spécifiée, on met à jour tous les feeds
