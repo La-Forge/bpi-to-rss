@@ -58,6 +58,22 @@ uv run pytest -x        # stop on first failure for debugging
 All network calls are mocked in offline tests. The `tests/conftest.py` fixture
 also disables Sentry to prevent network noise during test runs.
 
+### Pre-commit hooks
+
+The repo ships a `.pre-commit-config.yaml` that runs `ruff --fix` and `ty` on
+every commit. Activate it once:
+
+```sh
+pre-commit install
+```
+
+Then commits are blocked (exit ≠ 0) if either `uvx ruff check --fix .` or
+`uvx ty check .` reports any issue. Run everything manually with:
+
+```sh
+pre-commit run --all-files
+```
+
 ### CI
 
 - **Push / pull request** — lint (`ruff`) + offline tests (`pytest`) run in CI.
