@@ -1,10 +1,14 @@
-from scrappers.GniusScrapper import GniusScrapper, FEED_PATH as GNIUS_FEED_PATH
-from scrappers.BpifranceScrapper import BpifranceScrapper, FEED_PATH as BPI_FEED_PATH
-from scrappers.IleDeFranceScrapper import IleDeFranceScrapper, FEED_PATH as IDF_FEED_PATH
-from scrappers.ProjetAchatPublicScrapper import ProjetsAchatScrapper, FEED_PATH as PROJET_ACHAT_FEED_PATH
-
-import os
 import argparse
+import os
+
+from scrappers.BpifranceScrapper import FEED_PATH as BPI_FEED_PATH
+from scrappers.BpifranceScrapper import BpifranceScrapper
+from scrappers.GniusScrapper import FEED_PATH as GNIUS_FEED_PATH
+from scrappers.GniusScrapper import GniusScrapper
+from scrappers.IleDeFranceScrapper import FEED_PATH as IDF_FEED_PATH
+from scrappers.IleDeFranceScrapper import IleDeFranceScrapper
+from scrappers.ProjetAchatPublicScrapper import FEED_PATH as PROJET_ACHAT_FEED_PATH
+from scrappers.ProjetAchatPublicScrapper import ProjetsAchatScrapper
 
 
 def main(verbose, update_bpi, update_gnius, update_idf, update_achat):
@@ -36,7 +40,7 @@ def main(verbose, update_bpi, update_gnius, update_idf, update_achat):
         print(f"Updating {idf_feed_file}...")
         idf_scrapper.update_feed_file(idf_feed_file, verbose=verbose)
         print(f"{idf_feed_file} updated.")
-        
+
     if update_achat:
         print(f"Updating {achat_feed_file}...")
         projetachat_scrapper.update_feed_file(achat_feed_file, verbose=verbose)
@@ -58,9 +62,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Si aucune option n'est spécifiée, on met à jour tous les feeds
-    update_bpi = args.bpifrance or (not args.bpifrance and not args.gnius and not args.idf and not args.achat)
-    update_gnius = args.gnius or (not args.bpifrance and not args.gnius and not args.idf and not args.achat)
-    update_idf = args.idf or (not args.bpifrance and not args.gnius and not args.idf and not args.achat)
-    update_achat = args.achat or (not args.bpifrance and not args.gnius and not args.idf and not args.achat)
+    update_all = not (args.bpifrance or args.gnius or args.idf or args.achat)
+    update_bpi = args.bpifrance or update_all
+    update_gnius = args.gnius or update_all
+    update_idf = args.idf or update_all
+    update_achat = args.achat or update_all
 
     main(args.verbose, update_bpi, update_gnius, update_idf, update_achat)

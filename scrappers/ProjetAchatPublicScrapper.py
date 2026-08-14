@@ -1,7 +1,9 @@
-import requests
-from scrappers.APIScrapper import APIScrapper
+from datetime import UTC
+
 import dateparser
-from datetime import timezone
+import requests
+
+from scrappers.APIScrapper import APIScrapper
 
 FEED_PATH = 'feeds/projetachat_feed.xml'
 
@@ -29,7 +31,8 @@ class ProjetsAchatScrapper(APIScrapper):
         if not siren:
             return None
         s = str(siren).strip()
-        # Le SIREN est sur 9 chiffres; si ce n'est pas le cas, on essaie quand même mais on gère prudemment.
+        # Le SIREN est sur 9 chiffres; si ce n'est pas le cas, on essaie quand
+        # même mais on gère prudemment.
         if s in self._siren_cache:
             return self._siren_cache[s]
 
@@ -99,7 +102,7 @@ class ProjetsAchatScrapper(APIScrapper):
 
     def format_articles(self, data):
         """
-        Formate les données API dans le format attendu 
+        Formate les données API dans le format attendu
         """
         articles = []
 
@@ -108,14 +111,32 @@ class ProjetsAchatScrapper(APIScrapper):
             siren = fields.get('siren_de_l_entite_acheteuse')
             entite_nom = self.get_entity_name_from_siren(siren)
 
+            categorie = fields.get(
+                'categorie_d_achat', 'Pas de catégorie d achat définie'
+            )
+            date_pub = fields.get(
+                'date_previsionnelle_de_publication',
+                'Pas de date prévisionnelle de publication définie',
+            )
+            montant = fields.get(
+                'montant_estime_du_marche',
+                'Pas de montant estimé du marché défini',
+            )
+            duree = fields.get('duree_previsionnelle_du_marche')
+
             description_parts = [
                 f"Description : {fields.get('description', '—')}",
                 f"Statut : {fields.get('statut', 'Pas de statut défini')}",
-                f"Catégorie d'achat : {fields.get('categorie_d_achat', 'Pas de catégorie d achat définie')}",
-                f"Date prévisionnelle de publication : {fields.get('date_previsionnelle_de_publication', 'Pas de date prévisionnelle de publication définie')}",
+                f"Catégorie d'achat : {categorie}",
+                f"Date prévisionnelle de publication : {date_pub}",
                 f"Entité acheteuse : {entite_nom or '—'} (SIREN : {siren or '—'})",
-                f"Montant estimé du marché : {fields.get('montant_estime_du_marche', 'Pas de montant estimé du marché défini')}",
-                f"Durée prévisionnelle du marché : {fields.get('duree_previsionnelle_du_marche')} mois" if fields.get('duree_previsionnelle_du_marche') else "Durée prévisionnelle du marché : Pas de durée prévisionnelle du marché définie",
+                f"Montant estimé du marché : {montant}",
+                f"Durée prévisionnelle du marché : {duree} mois"
+                if duree
+                else (
+                    "Durée prévisionnelle du marché : "
+                    "Pas de durée prévisionnelle du marché définie"
+                ),
             ]
             description = "\n".join(description_parts)
 
@@ -155,5 +176,5 @@ class ProjetsAchatScrapper(APIScrapper):
         if not dt:
             return None
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
         return dt

@@ -1,17 +1,16 @@
+import unicodedata
+import xml.etree.ElementTree as ET
+
+import uvicorn
 from fastapi import FastAPI, Query
+from fastapi.requests import Request
 from fastapi.responses import Response
 from fastapi.templating import Jinja2Templates
-from fastapi.requests import Request
+
 from scrappers.BpifranceScrapper import FEED_PATH as BPI_FEED_PATH
 from scrappers.GniusScrapper import FEED_PATH as GNIUS_FEED_PATH
 from scrappers.IleDeFranceScrapper import FEED_PATH as IDF_FEED_PATH
 from scrappers.ProjetAchatPublicScrapper import FEED_PATH as PROJET_ACHAT_FEED_PATH
-import uvicorn
-
-import xml.etree.ElementTree as ET
-import unicodedata
-import re
-
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -19,7 +18,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=Response)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html", {"request": request})
 
 
 def get_feed(feed_content, q: str | None = None):
@@ -71,7 +70,7 @@ def get_rss_projetachat_feed_content():
 
 def get_rss_feed_content(file_path):
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, encoding="utf-8") as file:
             return file.read()
     except Exception as e:
         print(f"Error reading the file: {e}")
@@ -81,7 +80,7 @@ def get_rss_feed_content(file_path):
 ATOM_NS = "{http://www.w3.org/2005/Atom}"
 
 
-def _strip_accents(text: str) -> str:
+def _strip_accents(text: str | None) -> str:
     if not text:
         return ""
     # Normalize and remove diacritics for accent-insensitive search
@@ -94,8 +93,11 @@ def _normalize(text: str) -> str:
 
 
 def _tokenize_query(q: str) -> list[str]:
-    words = [w.strip('"\'\'') for w in q.split() if w.strip()]
-    return words
+    # Intentional: strip the *set* of surrounding quote characters (" ' \).
+    quote_chars = '"\'\\'
+    return [
+        w.strip(quote_chars) for w in q.split() if w.strip()  # noqa: B005
+    ]
 
 
 def _entry_text_atom(entry: ET.Element) -> str:
