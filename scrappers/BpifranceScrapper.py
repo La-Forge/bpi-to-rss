@@ -1,17 +1,16 @@
-from scrappers.WebScrapper import WebScrapper
 from html import unescape
+
+import dateparser
 import requests
 from bs4 import BeautifulSoup
-import dateparser
-from feedgen.feed import FeedGenerator
-from sentry_sdk import capture_exception
 
+from scrappers.WebScrapper import WebScrapper
 
 FEED_PATH = 'feeds/bpi_feed.xml'
 
 class BpifranceScrapper(WebScrapper):
     """
-    Classe pour scrapper les données de BpiFrance - appel à projets. 
+    Classe pour scrapper les données de BpiFrance - appel à projets.
     """
     def __init__(self):
         super().__init__(
@@ -31,7 +30,7 @@ class BpifranceScrapper(WebScrapper):
             'accept': 'application/json, text/javascript, */*; q=0.01',
             'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
             'cache-control': 'no-cache',
-            'cookie': '_hjSessionUser_1857115=eyJpZCI6IjcxMDBmYTlkLWY3YWQtNWE0MC05ZDZkLTFjODJiNzU2MmY2NCIsImNyZWF0ZWQiOjE3MDE2OTk5MDg4ODEsImV4aXN0aW5nIjp0cnVlfQ==; tCdebugLib=1; TCPID=12455955114162466917; TC_PRIVACY=0%40017%7C404%7C3480%40277%2C279%2C280%2C281%2C282%2C283%2C284%2C287%2C288%2C289%2C302%2C303%2C304%2C309%40240%401716537312946%2C1716537312946%2C1732089312946%40; TC_PRIVACY_CENTER=277%2C279%2C280%2C281%2C282%2C283%2C284%2C287%2C288%2C289%2C302%2C303%2C304%2C309; _pk_id.1.0856=e81da058ea127a2e.1716537319.; _pk_id.2.0856=6a88671d60ca1dc3.1716537319.; _mr_id=6a88671d60ca1dc3',
+            'cookie': '_hjSessionUser_1857115=eyJpZCI6IjcxMDBmYTlkLWY3YWQtNWE0MC05ZDZkLTFjODJiNzU2MmY2NCIsImNyZWF0ZWQiOjE3MDE2OTk5MDg4ODEsImV4aXN0aW5nIjp0cnVlfQ==; tCdebugLib=1; TCPID=12455955114162466917; TC_PRIVACY=0%40017%7C404%7C3480%40277%2C279%2C280%2C281%2C282%2C283%2C284%2C287%2C288%2C289%2C302%2C303%2C304%2C309%40240%401716537312946%2C1716537312946%2C1732089312946%40; TC_PRIVACY_CENTER=277%2C279%2C280%2C281%2C282%2C283%2C284%2C287%2C288%2C289%2C302%2C303%2C304%2C309; _pk_id.1.0856=e81da058ea127a2e.1716537319.; _pk_id.2.0856=6a88671d60ca1dc3.1716537319.; _mr_id=6a88671d60ca1dc3',  # noqa: E501
             'pragma': 'no-cache',
             'priority': 'u=1, i',
             'referer': 'https://www.bpifrance.fr/nos-appels-a-projets-concours',
@@ -41,7 +40,7 @@ class BpifranceScrapper(WebScrapper):
             'sec-fetch-dest': 'empty',
             'sec-fetch-mode': 'cors',
             'sec-fetch-site': 'same-origin',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',  # noqa: E501
             'x-requested-with': 'XMLHttpRequest'
         }
 

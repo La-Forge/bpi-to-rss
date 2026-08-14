@@ -1,17 +1,16 @@
-from scrappers.WebScrapper import WebScrapper
 from html import unescape
+
+import dateparser
 import requests
 from bs4 import BeautifulSoup
-import dateparser
-from feedgen.feed import FeedGenerator
-from sentry_sdk import capture_exception
 
+from scrappers.WebScrapper import WebScrapper
 
 FEED_PATH = 'feeds/gnius_feed.xml'
 
 class GniusScrapper(WebScrapper):
     """
-    Classe pour scrapper les données de GNius - actualités. 
+    Classe pour scrapper les données de GNius - actualités.
     """
     def __init__(self):
         super().__init__(

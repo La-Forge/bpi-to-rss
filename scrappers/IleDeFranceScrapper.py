@@ -1,12 +1,14 @@
+import datetime
+
 import requests
+
 from scrappers.APIScrapper import APIScrapper
-import datetime 
 
 FEED_PATH = 'feeds/idf_feed.xml'
 
 class IleDeFranceScrapper(APIScrapper):
     """
-    Classe pour scrapper les données de l'Ile-de-France - appel à projets. 
+    Classe pour scrapper les données de l'Ile-de-France - appel à projets.
     """
     def __init__(self):
         super().__init__(
@@ -16,7 +18,7 @@ class IleDeFranceScrapper(APIScrapper):
             feed_author="Île-de-France",
             feed_link="https://data.iledefrance.fr/explore/dataset/aides-appels-a-projets/",
         )
-        self.limit_per_request = 100  
+        self.limit_per_request = 100
 
     def scrapPages(self, verbose=False):
         """
@@ -32,14 +34,17 @@ class IleDeFranceScrapper(APIScrapper):
             }
 
             response = requests.get(self.base_url, params=params)
-            response.raise_for_status()  
+            response.raise_for_status()
             data = response.json()
 
             current_records = data.get("results", [])
             all_records.extend(current_records)
 
             if verbose:
-                print(f"Page avec offset {offset} : {len(current_records)} enregistrements récupérés.")
+                print(
+                    f"Page avec offset {offset} : "
+                    f"{len(current_records)} enregistrements récupérés."
+                )
 
             if len(current_records) < self.limit_per_request:
                 break
@@ -61,7 +66,8 @@ class IleDeFranceScrapper(APIScrapper):
             description_parts = [
             f"Description : {fields.get('chapo_txt', 'Pas de description disponible')}",
             f"Pour quel type de projet : {fields.get('objectif_txt', 'Non spécifié')}",
-            f"Qui peut en bénéficier : {', '.join(fields.get('qui_peut_en_beneficier', [])) or 'Non spécifié'}"
+            "Qui peut en bénéficier : "
+            f"{', '.join(fields.get('qui_peut_en_beneficier', [])) or 'Non spécifié'}"
             ]
             description = "\n".join(description_parts)
             articles.append({
@@ -69,7 +75,7 @@ class IleDeFranceScrapper(APIScrapper):
                 "link": fields.get("url_descriptif", ""),
                 "description": description,
                 "date": self.parse_date(fields.get("date")),
-                "content_class": None, 
+                "content_class": None,
             })
         return articles
 
@@ -79,6 +85,8 @@ class IleDeFranceScrapper(APIScrapper):
         Transforme une date au format ISO 8601 en format RSS (RFC 822).
         """
         try:
-            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S%z").strftime("%a, %d %b %Y %H:%M:%S %z")
+            return datetime.datetime.strptime(
+                date_str, "%Y-%m-%dT%H:%M:%S%z"
+            ).strftime("%a, %d %b %Y %H:%M:%S %z")
         except Exception:
             return None

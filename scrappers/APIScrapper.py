@@ -1,10 +1,9 @@
-from scrappers.BaseScrapper import BaseScrapper
-from html import unescape
-import requests
-from bs4 import BeautifulSoup
-import dateparser
+
 from feedgen.feed import FeedGenerator
 from sentry_sdk import capture_exception
+
+from scrappers.BaseScrapper import BaseScrapper
+
 
 class APIScrapper(BaseScrapper):
 

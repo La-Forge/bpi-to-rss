@@ -1,9 +1,11 @@
 name: Run Unit Tests with Pytest
 
-on: [push]
+on:
+  push:
+  pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,6 +16,9 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --frozen
+
+      - name: Lint (tests + monitoring, offline unit tests only)
+        run: uv run ruff check tests monitoring
 
       - name: Run tests with pytest
         run: uv run pytest

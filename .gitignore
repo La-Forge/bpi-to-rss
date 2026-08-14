@@ -9,3 +9,6 @@ ecosystem.config.js
 
 ## generated feeds should be ignored
 feeds
+
+## scrape metrics history (kept in an external store, not in git)
+metrics

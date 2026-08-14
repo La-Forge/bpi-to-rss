@@ -1,0 +1,59 @@
+name: Live Scrape Monitoring
+
+# Runs the scrapers against the real sources and checks that the number of
+# scraped items stays consistent over time and that the page/API structure is
+# still relevant. Fails (and opens an issue) if a source returns 0 items, drops
+# below its absolute floor, or drops sharply vs. the previous run.
+#
+# Metrics history (the append-only count list) is kept out of git: it is saved
+# as a GitHub Actions artifact and re-used on subsequent runs via download.
+on:
+  schedule:
+    - cron: "30 5 * * *" # 05:30 UTC daily
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Restore previous metrics history
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: scrape-metrics
+          path: metrics/
+
+      - name: Run live scrape health check
+        env:
+          SENTRY_DSN: ""
+          SCRAPE_METRICS_FILE: ${{ github.workspace }}/metrics/scrape_metrics.json
+        run: uv run python monitoring/scrape_health.py
+
+      - name: Upload metrics history artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-metrics
+          path: metrics/scrape_metrics.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Open an issue when an alert is triggered
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Scrape consistency alert',
+              body: 'One or more scrapers triggered an alert (0 items, below floor, or sharp drop). ' +
+                    'See the failed run for details.',
+            })

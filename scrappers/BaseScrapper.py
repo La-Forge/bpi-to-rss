@@ -1,15 +1,20 @@
-import requests
-import pprint
-from bs4 import BeautifulSoup
-from feedgen.feed import FeedGenerator
-from sentry_sdk import capture_exception
-import sentry_sdk
 import os
+import pprint
 
-sentry_sdk.init(
-    "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
-    traces_sample_rate=1.0,
-)
+import sentry_sdk
+
+
+def _init_sentry():
+    """Initialise Sentry unless a falsy SENTRY_DSN is set (e.g. empty string for tests)."""
+    dsn = os.environ.get(
+        "SENTRY_DSN",
+        "https://050cb1f4aff04d22af23721245c4ae35@o1031661.ingest.sentry.io/5998395",
+    )
+    if dsn:
+        sentry_sdk.init(dsn, traces_sample_rate=1.0)
+
+
+_init_sentry()
 
 
 class BaseScrapper:

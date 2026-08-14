@@ -1,12 +1,13 @@
-from scrappers.BaseScrapper import BaseScrapper
-from html import unescape
+import re
+from urllib.parse import urljoin, urlparse
+
 import requests
 from bs4 import BeautifulSoup
-import dateparser
 from feedgen.feed import FeedGenerator
 from sentry_sdk import capture_exception
-from urllib.parse import urljoin, urlparse
-import re
+
+from scrappers.BaseScrapper import BaseScrapper
+
 
 class WebScrapper(BaseScrapper):
 
@@ -32,19 +33,24 @@ class WebScrapper(BaseScrapper):
             s = urljoin(self.base_url.rstrip('/') + '/', s.lstrip('/'))
         return s
 
-    def scrapPages(self, verbose=False):
+    def scrapPage(self, pageNumber, verbose=False):
+        """Fetch and parse a single page of results. Implemented by subclasses."""
+        raise NotImplementedError("This method should be overridden by subclasses")
+
+    def scrapPages(self, verbose=False, max_pages=50):
         posts = []
         page = 0
         count_for_current_page = -1
 
-        while count_for_current_page != 0:
+        # max_pages guards against an infinite loop if a page never returns 0 items.
+        while count_for_current_page != 0 and page < max_pages:
             posts_on_current_page = self.scrapPage(pageNumber=page, verbose=verbose)
             count_for_current_page = len(posts_on_current_page)
             posts.extend(posts_on_current_page)
             page += 1
 
         return posts
-    
+
     def get_full_article_content(self, article_url, content_class):
         # Normalize the URL to avoid cases like 'www.bpifrance.frhttps'
         normalized_url = self._normalize_url(article_url)
@@ -76,9 +82,12 @@ class WebScrapper(BaseScrapper):
             article_content = node.get_text(separator='\n', strip=True) if node else ""
             return article_content
         else:
-            print(f"Failed to fetch article content (HTTP {response.status_code}): {normalized_url}")
+            print(
+                f"Failed to fetch article content (HTTP {response.status_code}): "
+                f"{normalized_url}"
+            )
             return ""
-        
+
     def generate_feed(self, verbose=True):
         fg = FeedGenerator()
         fg.title(self.feed_title)
