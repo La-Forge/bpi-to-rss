@@ -10,7 +10,6 @@ from scrappers.BaseScrapper import BaseScrapper
 
 
 class WebScrapper(BaseScrapper):
-
     def __init__(self, base_url, host, feed_title, feed_author, feed_link):
         self.base_url = base_url
         self.host = host
@@ -19,18 +18,17 @@ class WebScrapper(BaseScrapper):
         self.feed_link = feed_link
 
     def _normalize_url(self, url: str) -> str:
-        """Return a clean absolute URL built from base_url and a possibly malformed input.
-        """
+        """Return a clean absolute URL built from base_url and a possibly malformed input."""
         if not url:
             return self.base_url
         s = url.strip()
         # If the string contains an embedded scheme, keep from the first one
         m = re.search(r"https?://", s)
         if m:
-            s = s[m.start():]
+            s = s[m.start() :]
         # If there's still no scheme, join with base_url
         if not urlparse(s).scheme:
-            s = urljoin(self.base_url.rstrip('/') + '/', s.lstrip('/'))
+            s = urljoin(self.base_url.rstrip("/") + "/", s.lstrip("/"))
         return s
 
     def scrapPage(self, pageNumber, verbose=False):
@@ -78,13 +76,12 @@ class WebScrapper(BaseScrapper):
             if content_class:
                 node = soup.find(class_=content_class)
             if node is None:
-                node = soup.find('article') or soup.find('main') or soup.body
-            article_content = node.get_text(separator='\n', strip=True) if node else ""
+                node = soup.find("article") or soup.find("main") or soup.body
+            article_content = node.get_text(separator="\n", strip=True) if node else ""
             return article_content
         else:
             print(
-                f"Failed to fetch article content (HTTP {response.status_code}): "
-                f"{normalized_url}"
+                f"Failed to fetch article content (HTTP {response.status_code}): {normalized_url}"
             )
             return ""
 
@@ -107,9 +104,7 @@ class WebScrapper(BaseScrapper):
                 fe.link(href=link)
                 fe.description(article["description"])
                 fe.pubDate(article["date"])
-                full_content = self.get_full_article_content(
-                    link, article.get("content_class")
-                )
+                full_content = self.get_full_article_content(link, article.get("content_class"))
                 if full_content:
                     fe.content(full_content)
         except Exception as e:

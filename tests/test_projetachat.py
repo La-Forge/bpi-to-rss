@@ -1,4 +1,5 @@
 """Unit tests for ProjetsAchatScrapper parsing logic (no network)."""
+
 import scrappers.ProjetAchatPublicScrapper as mod
 from scrappers.ProjetAchatPublicScrapper import ProjetsAchatScrapper
 
@@ -23,9 +24,7 @@ def test_parse_date_aware_keeps_tz():
 
 def test_format_articles_builds_fields(monkeypatch):
     s = ProjetsAchatScrapper()
-    monkeypatch.setattr(
-        s, "get_entity_name_from_siren", lambda siren: "Mairie de Paris"
-    )
+    monkeypatch.setattr(s, "get_entity_name_from_siren", lambda siren: "Mairie de Paris")
     records = [
         {
             "fields": {
@@ -50,9 +49,7 @@ def test_format_articles_builds_fields(monkeypatch):
 
 def test_format_articles_no_siren_no_network():
     s = ProjetsAchatScrapper()
-    articles = s.format_articles(
-        [{"fields": {"libelle": "Sans siren", "code": "9"}}]
-    )
+    articles = s.format_articles([{"fields": {"libelle": "Sans siren", "code": "9"}}])
     assert len(articles) == 1
     assert articles[0]["title"] == "Sans siren"
     assert "—" in articles[0]["description"]
@@ -88,7 +85,5 @@ def test_entity_name_none_and_error(monkeypatch):
         def json(self):
             return {}
 
-    monkeypatch.setattr(
-        mod.requests, "get", lambda url, timeout=6: FailingResponse()
-    )
+    monkeypatch.setattr(mod.requests, "get", lambda url, timeout=6: FailingResponse())
     assert s.get_entity_name_from_siren("111111111") is None

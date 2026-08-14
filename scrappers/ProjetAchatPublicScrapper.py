@@ -5,13 +5,15 @@ import requests
 
 from scrappers.APIScrapper import APIScrapper
 
-FEED_PATH = 'feeds/projetachat_feed.xml'
+FEED_PATH = "feeds/projetachat_feed.xml"
+
 
 class ProjetsAchatScrapper(APIScrapper):
     """
     Scrapper pour l'API 'Projets d'achats publics' (APProch).
     Source: https://data.economie.gouv.fr/explore/dataset/projets-dachats-publics/
     """
+
     def __init__(self):
         super().__init__(
             base_url="https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/projets-dachats-publics/records",
@@ -22,6 +24,7 @@ class ProjetsAchatScrapper(APIScrapper):
         )
         self.limit_per_request = 100
         self._siren_cache = {}
+
     def get_entity_name_from_siren(self, siren):
         """
         Retourne le nom de l'entité (dénomination) à partir d'un SIREN
@@ -107,22 +110,20 @@ class ProjetsAchatScrapper(APIScrapper):
         articles = []
 
         for rec in data:
-            fields = rec.get('fields', rec)
-            siren = fields.get('siren_de_l_entite_acheteuse')
+            fields = rec.get("fields", rec)
+            siren = fields.get("siren_de_l_entite_acheteuse")
             entite_nom = self.get_entity_name_from_siren(siren)
 
-            categorie = fields.get(
-                'categorie_d_achat', 'Pas de catégorie d achat définie'
-            )
+            categorie = fields.get("categorie_d_achat", "Pas de catégorie d achat définie")
             date_pub = fields.get(
-                'date_previsionnelle_de_publication',
-                'Pas de date prévisionnelle de publication définie',
+                "date_previsionnelle_de_publication",
+                "Pas de date prévisionnelle de publication définie",
             )
             montant = fields.get(
-                'montant_estime_du_marche',
-                'Pas de montant estimé du marché défini',
+                "montant_estime_du_marche",
+                "Pas de montant estimé du marché défini",
             )
-            duree = fields.get('duree_previsionnelle_du_marche')
+            duree = fields.get("duree_previsionnelle_du_marche")
 
             description_parts = [
                 f"Description : {fields.get('description', '—')}",
@@ -134,33 +135,38 @@ class ProjetsAchatScrapper(APIScrapper):
                 f"Durée prévisionnelle du marché : {duree} mois"
                 if duree
                 else (
-                    "Durée prévisionnelle du marché : "
-                    "Pas de durée prévisionnelle du marché définie"
+                    "Durée prévisionnelle du marché : Pas de durée prévisionnelle du marché définie"
                 ),
             ]
             description = "\n".join(description_parts)
 
-            code = fields.get('code')
-            link = f"https://projets-achats.marches-publics.gouv.fr/project/{code}" if code else "https://projets-achats.marches-publics.gouv.fr/"
+            code = fields.get("code")
+            link = (
+                f"https://projets-achats.marches-publics.gouv.fr/project/{code}"
+                if code
+                else "https://projets-achats.marches-publics.gouv.fr/"
+            )
 
             # Try multiple date fields; APIScrapper/BaseScrapper often skips items without a date
             date_candidates = [
-                fields.get('date_previsionnelle_de_publication'),
-                fields.get('date_de_publication'),
-                fields.get('date_mise_en_ligne'),
-                fields.get('date'),
-                fields.get('updated_at'),
-                fields.get('created_at'),
+                fields.get("date_previsionnelle_de_publication"),
+                fields.get("date_de_publication"),
+                fields.get("date_mise_en_ligne"),
+                fields.get("date"),
+                fields.get("updated_at"),
+                fields.get("created_at"),
             ]
             date_value = next((d for d in date_candidates if d), None)
 
-            articles.append({
-                'title': fields.get('libelle', 'Pas de titre'),
-                'link': link,
-                'description': description,
-                'date': self.parse_date(date_value),
-                'content_class': None,
-            })
+            articles.append(
+                {
+                    "title": fields.get("libelle", "Pas de titre"),
+                    "link": link,
+                    "description": description,
+                    "date": self.parse_date(date_value),
+                    "content_class": None,
+                }
+            )
 
         return articles
 

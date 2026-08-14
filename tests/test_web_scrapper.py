@@ -1,4 +1,5 @@
 """Unit tests for WebScrapper helpers and pagination (no network)."""
+
 from scrappers.WebScrapper import WebScrapper
 
 

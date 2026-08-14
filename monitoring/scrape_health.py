@@ -12,6 +12,7 @@ Run manually:
 
 Run from CI (scheduled) and alert on a non-zero exit code.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -66,9 +67,7 @@ def last_count_for_source(history: list[dict], source: str) -> int | None:
     return None
 
 
-def evaluate_metric(
-    source: str, count: int, previous: int | None, config: dict
-) -> list[dict]:
+def evaluate_metric(source: str, count: int, previous: int | None, config: dict) -> list[dict]:
     """Return a list of alert dicts for the given count.
 
     Rules:
@@ -91,10 +90,7 @@ def evaluate_metric(
             {
                 "source": source,
                 "level": "critical",
-                "message": (
-                    f"count {count} is below the absolute floor "
-                    f"{config['min_count']}"
-                ),
+                "message": (f"count {count} is below the absolute floor {config['min_count']}"),
             }
         )
     if previous:
@@ -111,6 +107,8 @@ def evaluate_metric(
                 }
             )
     return alerts
+
+
 def scrape_source(source: str, verbose: bool = False) -> dict:
     """Perform a live scrape and return metrics for one source."""
     scraper = SCRAPER_FACTORIES[source]()
@@ -170,19 +168,13 @@ def run(
                     "message": f"scrape failed: {exc}",
                 }
             )
-            new_entries.append(
-                {"source": source, "run_at": report["run_at"], "count": 0}
-            )
+            new_entries.append({"source": source, "run_at": report["run_at"], "count": 0})
             continue
 
         previous = last_count_for_source(history, source)
         report["sources"][source] = metric
-        report["alerts"].extend(
-            evaluate_metric(source, metric["count"], previous, config)
-        )
-        new_entries.append(
-            {"source": source, "run_at": metric["run_at"], "count": metric["count"]}
-        )
+        report["alerts"].extend(evaluate_metric(source, metric["count"], previous, config))
+        new_entries.append({"source": source, "run_at": metric["run_at"], "count": metric["count"]})
 
     history = trim_history(history + new_entries)
     write_history(path, history)

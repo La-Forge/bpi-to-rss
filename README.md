@@ -60,15 +60,17 @@ also disables Sentry to prevent network noise during test runs.
 
 ### Pre-commit hooks
 
-The repo ships a `.pre-commit-config.yaml` that runs `ruff --fix` and `ty` on
-every commit. Activate it once:
+The repo ships a `.pre-commit-config.yaml` that runs `ruff format`, `ruff --fix`
+and `ty` on every commit. Activate it once:
 
 ```sh
 pre-commit install
 ```
 
-Then commits are blocked (exit ≠ 0) if either `uvx ruff check --fix .` or
-`uvx ty check .` reports any issue. Run everything manually with:
+Then commits are blocked (exit ≠ 0) if `uvx ty check .` reports any issue;
+`uvx ruff format .` and `uvx ruff check --fix .` auto-fix / auto-format the code
+(and re-stage their changes), so they only fail if an issue cannot be fixed
+automatically. Run everything manually with:
 
 ```sh
 pre-commit run --all-files

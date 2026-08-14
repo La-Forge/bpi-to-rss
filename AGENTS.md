@@ -29,9 +29,10 @@ uv run pytest           # fast unit tests (parallel, offline; live excluded)
 uv run pytest -m live   # live tests only (hits real sites) - CI-periodic
 uv run ruff check .     # whole-repo lint (must stay clean)
 uv run ruff check --fix .   # auto-fix safe issues
+uv run ruff format .        # auto-format whole repo
 uvx ty check            # type checker (must stay clean)
 pre-commit install      # activate repo pre-commit hooks (.pre-commit-config.yaml)
-pre-commit run --all-files   # run ruff --fix + ty over the whole repo
+pre-commit run --all-files   # run ruff format/fix + ty over the whole repo
 uv run python serve_feeds.py           # serve web service (default :8000)
 uv run python generate_feeds.py        # (re)generate feeds from live sources
 uv run python monitoring/scrape_health.py   # live consistency check (hits network)
@@ -76,11 +77,11 @@ uv run python -m uvicorn serve_feeds:app --port 8971 &  # then curl /
   Do NOT run `pytest -p no:xdist` — `-n` is still in `addopts` and will error.
 - **ruff**: `line-length = 100`, rules `E,F,W,I,UP,B`. Whole repo must pass.
 - **Type hints use modern unions** (`str | None`); `uvx ty check` must pass.
-- **pre-commit**: `.pre-commit-config.yaml` runs `uvx ruff check --fix .` and
-  `uvx ty check .` on every commit (`language: system`, `pass_filenames: false`,
-  `always_run: true`). Requires `pre-commit install` per clone. A commit is
-  blocked if either command exits non-zero; ruff's `--fix` may auto-stage its
-  own changes.
+- **pre-commit**: `.pre-commit-config.yaml` runs `uvx ruff format .`,
+  `uvx ruff check --fix .` and `uvx ty check .` on every commit
+  (`language: system`, `pass_filenames: false`, `always_run: true`). Requires
+  `pre-commit install` per clone. A commit is blocked if any command exits
+  non-zero; ruff's `format`/`--fix` may auto-stage their own changes.
 
 ## Testing conventions (established this session)
 

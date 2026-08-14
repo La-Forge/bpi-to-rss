@@ -23,18 +23,14 @@ async def read_root(request: Request):
 
 def get_feed(feed_content, q: str | None = None):
     if feed_content is None:
-        return Response(
-            status_code=500, content="Internal Server Error: Could not read RSS feed"
-        )
+        return Response(status_code=500, content="Internal Server Error: Could not read RSS feed")
     if q:
         try:
             feed_content = filter_feed_content(feed_content, q)
         except Exception as e:
             print(f"Filter error: {e}")
     headers = {"Content-Type": "application/rss+xml; charset=utf-8"}
-    return Response(
-        content=feed_content, media_type="application/rss+xml", headers=headers
-    )
+    return Response(content=feed_content, media_type="application/rss+xml", headers=headers)
 
 
 @app.get("/bpi", response_class=Response)
@@ -46,9 +42,11 @@ async def get_bpi_feed(q: str | None = Query(None, alias="q")):
 async def get_gnius_feed(q: str | None = Query(None, alias="q")):
     return get_feed(feed_content=get_rss_gnius_feed_content(), q=q)
 
+
 @app.get("/idf", response_class=Response)
 async def get_idf_feed(q: str | None = Query(None, alias="q")):
     return get_feed(feed_content=get_rss_idf_feed_content(), q=q)
+
 
 @app.get("/projet-achat", response_class=Response)
 async def get_projetachat_feed(q: str | None = Query(None, alias="q")):
@@ -58,11 +56,14 @@ async def get_projetachat_feed(q: str | None = Query(None, alias="q")):
 def get_rss_bpifrance_feed_content():
     return get_rss_feed_content(file_path=BPI_FEED_PATH)
 
+
 def get_rss_gnius_feed_content():
     return get_rss_feed_content(file_path=GNIUS_FEED_PATH)
 
+
 def get_rss_idf_feed_content():
     return get_rss_feed_content(file_path=IDF_FEED_PATH)
+
 
 def get_rss_projetachat_feed_content():
     return get_rss_feed_content(file_path=PROJET_ACHAT_FEED_PATH)
@@ -94,9 +95,11 @@ def _normalize(text: str) -> str:
 
 def _tokenize_query(q: str) -> list[str]:
     # Intentional: strip the *set* of surrounding quote characters (" ' \).
-    quote_chars = '"\'\\'
+    quote_chars = "\"'\\"
     return [
-        w.strip(quote_chars) for w in q.split() if w.strip()  # noqa: B005
+        w.strip(quote_chars)
+        for w in q.split()
+        if w.strip()  # noqa: B005
     ]
 
 

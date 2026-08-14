@@ -1,4 +1,5 @@
 """Unit tests for serve_feeds filtering logic (no network)."""
+
 import xml.etree.ElementTree as ET
 
 import serve_feeds as sf
