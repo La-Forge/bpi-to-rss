@@ -21,6 +21,8 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from scrappers.BpifranceScrapper import BpifranceScrapper
 from scrappers.GniusScrapper import GniusScrapper
 from scrappers.IleDeFranceScrapper import IleDeFranceScrapper
