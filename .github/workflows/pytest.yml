@@ -1,9 +1,22 @@
 name: Run Unit Tests with Pytest
 
+# Only run when code the tests depend on changes (not for docs or workflow edits).
 on:
   push:
     branches: [main]
+    paths:
+      - "**.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".python-version"
+      - "templates/**"
   pull_request:
+    paths:
+      - "**.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".python-version"
+      - "templates/**"
 
 jobs:
   test:
