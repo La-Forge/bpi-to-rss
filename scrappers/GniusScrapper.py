@@ -29,11 +29,17 @@ class GniusScrapper(WebScrapper):
         articles = soup.find_all("article")
         scraps = []
         for article in articles:
+            heading = article.find("h3")
+            link = heading.find("a") if heading is not None else None
+            href = link.get("href") if link is not None else None
+            if heading is None or link is None or not isinstance(href, str):
+                # Malformed teaser (no <h3>/<a href>): skip it rather than raising,
+                # which would abort the whole page and leave the feed empty.
+                continue
             res = {}
-            link = article.find("h3").find("a")
-            res["title"] = unescape(article.find("h3").text.strip())
+            res["title"] = unescape(heading.text.strip())
             res["description"] = unescape(article.select(".o-teaser__infos--top")[0].text.strip())
-            res["link"] = self.host + link["href"]
+            res["link"] = self.host + href
             date = article.select(".o-teaser__infos .fw-medium .a-info__text")[0].text.strip()
             res["date"] = dateparser.parse(
                 date,
