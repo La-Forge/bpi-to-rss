@@ -56,7 +56,12 @@ class BpifranceScrapper(WebScrapper):
             articles = self.get_articles(soup)
             for article in articles:
                 # title and link
-                title, link = self.get_article_title_and_link(article=article)
+                parsed_title_and_link = self.get_article_title_and_link(article=article)
+                if parsed_title_and_link is None:
+                    # Malformed card (no usable <a href>): skip it instead of
+                    # aborting the whole page.
+                    continue
+                title, link = parsed_title_and_link
                 # date
                 start_date = self.get_start_date(article=article)
                 # type
@@ -86,11 +91,15 @@ class BpifranceScrapper(WebScrapper):
     def get_articles(self, content: BeautifulSoup):
         return content.select(".article-card")
 
-    def get_article_title_and_link(self, article: BeautifulSoup) -> tuple[str, str]:
+    def get_article_title_and_link(self, article: BeautifulSoup) -> tuple[str, str] | None:
         html_title = article.select(".desc-block .desc h3")[0]
         title = html_title.text.strip()
-        link = self.host + html_title.find("a")["href"]
-        return title, link
+        anchor = html_title.find("a")
+        href = anchor.get("href") if anchor is not None else None
+        if not isinstance(href, str):
+            # Malformed card: no usable link, let the caller skip it.
+            return None
+        return title, self.host + href
 
     def get_start_date(self, article: BeautifulSoup) -> str:
         desc_date = article.select(".card-date")[0].text.strip()
