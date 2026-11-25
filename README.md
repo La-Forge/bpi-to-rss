@@ -53,6 +53,8 @@ uv run pytest -x        # stop on first failure for debugging
 | `tests/test_idf.py` | IDF API parsing, date conversion, pagination |
 | `tests/test_serve_feeds.py` | Feed filtering (`?q=`), accent-insensitive search, Atom/RSS |
 | `tests/test_scrape_health.py` | Consistency-monitoring alert logic (offline, mocked) |
+| `tests/test_workflows.py` | GitHub Actions guard rails (parsed offline) |
+| `tests/test_tls_crypto_surface.py` | No reachable OpenSSL CMS/QUIC/AES-GCM-SIV surface (see `SECURITY.md`) |
 | `tests/test_bpi_scrapping.py` | **Live only** (`@pytest.mark.live`) — real Bpifrance site |
 
 All network calls are mocked in offline tests. The `tests/conftest.py` fixture

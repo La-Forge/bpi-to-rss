@@ -45,6 +45,20 @@ uv run python -m uvicorn serve_feeds:app --port 8971 &  # then curl /
 
 ## Critical gotchas (learned the hard way)
 
+- **`.python-version` is tracked on purpose and is the only interpreter pin**
+  (`3.13.18` → bundled OpenSSL 3.5.9). `Dockerfile` copies it before
+  `uv sync --locked`, so a missing/stale pin is a build error instead of a silent
+  "whatever `uv` resolves today". Local dev, CI and the image all inherit it —
+  bump that file deliberately (see `SECURITY.md`), never `uv python upgrade`, and
+  don't put it back in `.gitignore`.
+- **Docker base is a hardened (DHI) image:**
+  `ghcr.io/astral-sh/uv:0.13.10-alpine3.23-dhi`. It pins uv 0.13.10 + Alpine 3.23
+  (so `.python-version` resolves a fixed python-build-standalone build), runs as
+  uid/gid **65532** and is distroless: no `apk`, no `/root`, only busybox `sh`.
+  Hence the uv cache mount must target `/home/nonroot/.cache/uv` with
+  `uid=65532,gid=65532`, extra OS packages cannot be installed (use a `-dev` DHI
+  variant), and anything the container reads must be world-readable — notably the
+  `feeds/` host mount. Bump the tag deliberately, together with `.python-version`.
 - **`IleDeFranceScrapper` imports `import datetime` (the module).** It was broken
   because `parse_date` used `datetime.strptime` — the module has **no** `strptime`,
   so it silently returned `None` (caught by a broad `except`). The correct call is
