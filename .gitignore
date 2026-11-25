@@ -1,8 +1,10 @@
 __pycache__/*
 *venv
-.python-version
 *.pyc
 .DS_Store
+
+# `.python-version` is deliberately tracked: it pins the interpreter (and the
+# OpenSSL copy bundled in it) for local dev, CI and the Docker image alike.
 
 ## PM2 config file
 ecosystem.config.js

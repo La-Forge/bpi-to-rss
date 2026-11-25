@@ -16,3 +16,10 @@ venv/
 .vscode/
 node_modules/
 *.bru
+# Generated feeds are mounted at runtime; copying them in would silently serve
+# stale data when the mount is missing.
+feeds/
+feeds.backup/
+.pytest_cache/
+.ruff_cache/
+metrics/
